@@ -26,7 +26,28 @@ class LazyUser(object):
             request._cached_user = get_user(request)
         return request._cached_user
 
+def set_cookie(request, key, val):
+    setattr(request, '__cookies_to_set__', 
+            getattr(request, '__cookies_to_set__', {}))
+    request.__cookies_to_set__[key] = val
+
+def delete_cookie(request, key):
+    setattr(request, '__cookies_to_delete__', 
+            getattr(request, '__cookies_to_delete__', []))
+    request.__cookies_to_set__.append(key)
+
 class AuthenticationMiddleware(object):
     def process_request(self, request):
+        request.__class__.set_cookie = set_cookie
+        request.__class__.delete_cookie = delete_cookie
         request.__class__.user = LazyUser()
         return None
+
+    def process_response(self, request, response):
+        if hasattr(request, '__cookies_to_set__'):
+            for key, val in request.__cookies_to_set__.items():
+                response.set_cookie(key, val)
+        if hasattr(request, '__cookies_to_delete__'):
+            for key in request.__cookies_to_delete__:
+                response.delete_cookie(key)
+        return response
