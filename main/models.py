@@ -4,6 +4,8 @@ from StringIO import StringIO
 
 from django.db import models
 
+from opencore.signals import contact_confirmed
+
 class _NoDefault(object):
     def __repr__(self):
         return "(no default)"
@@ -18,6 +20,13 @@ class EmailContact(models.Model):
     def __unicode__(self):
         return "Email %s for user %s (%sconfirmed)" % (
             self.email, self.user, "" if self.confirmed else "not ")
+
+    def confirm(self):
+        if self.confirmed:
+            return False
+        self.confirmed = True
+        contact_confirmed.send(sender=self.__class__, contact=self)
+        return True
 
 class DeferredMessage(models.Model):
     contact = models.ForeignKey(EmailContact)
