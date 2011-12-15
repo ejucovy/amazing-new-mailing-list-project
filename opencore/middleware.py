@@ -34,7 +34,7 @@ def set_cookie(request, key, val):
 def delete_cookie(request, key):
     setattr(request, '__cookies_to_delete__', 
             getattr(request, '__cookies_to_delete__', []))
-    request.__cookies_to_set__.append(key)
+    request.__cookies_to_delete__.append(key)
 
 class AuthenticationMiddleware(object):
     def process_request(self, request):
