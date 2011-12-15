@@ -104,6 +104,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'debug_toolbar',
     'djangohelpers',
+    'opencore',
     'main',
     )
 
