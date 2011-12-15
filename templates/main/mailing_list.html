@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>List {{ list.slug }}</h1>
+
+<ol>
+{% for post in list.mailinglistpost_set.all %}
+<li>{{ post.subject }} by {{ post.author }}</li>
+{% endfor %}
+</ol>
+
+{% endblock %}
