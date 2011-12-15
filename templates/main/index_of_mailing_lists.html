@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Lists</h1>
+
+<ol>
+{% for list in lists %}
+<li><a href="{% url mailing_list 'fleem' list.slug %}">{{ list }}</a></li>
+{% endfor %}
+</ol>
+
+<form method="POST">
+  {% csrf_token %}
+  <input name="slug" />
+  <input type="submit" />
+</form>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>List {{ list.slug }}</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Subject</th>
+      <th>Author</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for post in queued_posts %}
+    <tr>
+      <td>
+	{{ post.subject }}
+      </td>
+      <td>
+	{{ post.author }}
+      </td>
+      <td>
+	<form method="POST">
+	  {% csrf_token %}
+	  <input type="hidden" name="post" value="{{ post.pk }}" />
+	  <input type="hidden" name="action" value="accept" />
+
+	  <input type="submit" value="Accept" />
+	  {% if can_moderate_users %}
+	  Add as allowed sender? <input type="checkbox" 
+					name="add_allowed_sender" />
+	  {% endif %}
+	</form>
+
+	<form method="POST">
+	  {% csrf_token %}
+	  <input type="hidden" name="post" value="{{ post.pk }}" />
+	  <input type="hidden" name="action" value="reject" />
+	  
+	  <input type="submit" value="Reject" />
+	</form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
