@@ -17,8 +17,9 @@ urlpatterns = patterns(
     url(r'projects/(?P<project_slug>[\w\d-]+)/lists/$',
         'main.views.index_of_mailing_lists', name="index_of_mailing_lists"),
 
-
+    (r'^accounts/', include('inactive_user_workflow.urls')),
+    
     # url(r'^skel/', include('skel.foo.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-)
+    )

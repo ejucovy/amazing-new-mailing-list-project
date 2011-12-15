@@ -82,6 +82,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'opencore.middleware.AuthenticationMiddleware',
+    'inactive_user_workflow.middleware.CatchInactiveUsersMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
@@ -94,6 +95,8 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+ACCOUNT_ACTIVATION_DAYS = 7
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -101,9 +104,12 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'registration_defaults',
     'django.contrib.admin',
     'debug_toolbar',
     'djangohelpers',
+    'registration',
+    'inactive_user_workflow',
     'opencore',
     'main',
     )
