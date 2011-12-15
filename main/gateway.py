@@ -1,6 +1,7 @@
 import random
 from django.conf import settings
 from django.contrib.auth.models import User
+from registration.models import RegistrationProfile
 from zope.dottedname.resolve import resolve
 from main.models import EmailContact, DeferredMessage
 
@@ -25,8 +26,8 @@ def process(msg):
 def new_contact(msg):
     addr = msg.get("From")
 
-    user = User.objects.create(username=random_name(),
-                               password=random_name())
+    user = RegistrationProfile.objects.create_inactive_user(
+        username=random_name(), password=random_name(), email=addr)
     user.is_active = False
     user.set_unusable_password()
     user.save()
