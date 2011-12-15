@@ -14,6 +14,6 @@ class Command(BaseCommand):
         mailString = sys.stdin.read()
         msg = email.message_from_string(mailString)
         
-        gateway.process(msg)
+        result = gateway.process(msg)
 
         return

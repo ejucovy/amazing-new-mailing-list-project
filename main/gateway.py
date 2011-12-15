@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from registration.models import RegistrationProfile
 from zope.dottedname.resolve import resolve
 from main.models import EmailContact, DeferredMessage
+from celery.decorators import task
 
 def random_name():
     return "".join(random.choice("abcdefghijklmnopqrxtuvwxyz"
@@ -21,7 +22,7 @@ def process(msg):
     if not contact.confirmed:
         return defer(msg, contact)
 
-    return convert_to_web(msg, contact)
+    return convert_to_web.delay(msg, contact)
 
 def new_contact(msg):
     addr = msg.get("From")
@@ -44,6 +45,7 @@ def defer(msg, contact):
     deferred.save()
     return deferred
 
+@task()
 def convert_to_web(msg, contact):
     response, content = resolve(
         getattr(settings, 'EMAIL_TO_WEB_ROUTER', 

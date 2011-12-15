@@ -11,3 +11,5 @@ topp.utils
 django-registration
 django-registration-defaults
 django-inactive_user_workflow
+django-celery
+django-kombu

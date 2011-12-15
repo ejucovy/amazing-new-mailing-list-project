@@ -97,6 +97,8 @@ TEMPLATE_DIRS = (
 
 ACCOUNT_ACTIVATION_DAYS = 7
 
+BROKER_URL = "django://"
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -110,9 +112,13 @@ INSTALLED_APPS = (
     'djangohelpers',
     'registration',
     'inactive_user_workflow',
+    'djcelery',
+    'djkombu',
     'opencore',
     'main',
     )
+import djcelery
+djcelery.setup_loader()
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",

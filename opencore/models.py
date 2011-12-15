@@ -22,7 +22,6 @@ def confirm_email_contact(sender, user, **kwargs):
     email = user.email
     contact, _ = EmailContact.objects.get_or_create(email=email, user=user)
     contact.confirm()
-    contact.save()
 user_activated.connect(confirm_email_contact)
 
 def process_deferrals(sender, contact, **kwargs):

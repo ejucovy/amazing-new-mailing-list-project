@@ -25,6 +25,7 @@ class EmailContact(models.Model):
         if self.confirmed:
             return False
         self.confirmed = True
+        self.save()
         contact_confirmed.send(sender=self.__class__, contact=self)
         return True
 
