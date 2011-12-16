@@ -2,9 +2,12 @@ import email
 from django.conf import settings
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 import libopencore.auth
-from opencore.signals import user_activated, contact_confirmed
+from registration.signals import user_registered, user_activated
+from opencore.signals import contact_confirmed
 from main.models import EmailContact, DeferredMessage
 from main import gateway
+from django.contrib.auth import login
+from django.contrib.auth import authenticate
 
 def set_cookie(sender, request, user, **kwargs):
     secret = libopencore.auth.get_secret(settings.OPENCORE_SECRET_FILENAME)
@@ -36,3 +39,9 @@ def process_deferrals(sender, contact, **kwargs):
         gateway.process(msg)
         deferral.delete()
 contact_confirmed.connect(process_deferrals)
+
+def log_in_user(sender, user, request, **kwargs):
+    user_with_backend = authenticate(username=user.username,
+                                     password=request.POST['password1'])
+    login(request, user_with_backend)
+user_registered.connect(log_in_user)

@@ -28,7 +28,7 @@ def new_contact(msg):
     addr = msg.get("From")
 
     user = RegistrationProfile.objects.create_inactive_user(
-        username=random_name(), password=random_name(), email=addr)
+        username=random_name(), password=random_name(), email=addr, site=None, send_email=True)
     user.is_active = False
     user.set_unusable_password()
     user.save()
