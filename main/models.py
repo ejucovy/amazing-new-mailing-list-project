@@ -45,6 +45,9 @@ class MailingList(models.Model):
     slug = models.CharField(max_length=100, unique=True)
     config = models.TextField(null=True, blank=True)
 
+    def __unicode__(self):
+        return self.slug
+
     def set_options(self, kwargs, section="options"):
         if not self.config:
             self.config = "[%s]" % section

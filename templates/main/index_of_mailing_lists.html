@@ -9,9 +9,12 @@
 {% endfor %}
 </ol>
 
+<h2>Create a new list</h2>
 <form method="POST">
   {% csrf_token %}
-  <input name="slug" />
+  Slug: <input name="slug" />
+
+  {% include "opencore/permissions_form.html" %}
   <input type="submit" />
 </form>
 
