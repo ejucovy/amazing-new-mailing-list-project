@@ -1,0 +1,145 @@
+<hr/>
+<div id="managers-section"> 
+  <p style="clear:both">
+    List managers can perform all list functions;
+    set permissions for others; add and remove features;
+    and delete the list.
+  </p> 
+  <p>
+   In addition to the team members added below,
+   all project administrators also have these privileges. 
+   Project administrators are labelled on the project's team page.
+  </p> 
+
+  <select class="asmselect" name="managers" multiple="multiple" 
+	  title="Click to select project members">
+    {% for member in request.get_project_members %}
+    <option {% if member in wiki_managers %}selected="selected"{% endif %}
+	    value="{{member}}">{{member}}</option>
+    {% endfor %}
+  </select>
+ 
+</div> 
+<hr/> 
+<div id="permissions_section"> 
+  <!-- Permissions --> 
+  <div id="permission_help"> 
+    
+    <p>You can create mailinglists that match your particular needs by choosing the
+      options that best work for you.</p> 
+    
+    <p> The options further down the list add to or override those
+      options further up.</p> 
+    
+    <p>The options are also designed to avoid incompatible choices.</p> 
+    
+  </div> 
+  
+  <table>
+    <tbody>
+      <tr valign="top" padding="50px;">
+	<td width="50%"> 
+	  <h2>This project's members can</h2>
+	  <ul id="member_permissions">
+	    {% for permission in member_permissions %}
+	    <li style="clear:both; list-style-type:none">
+	      <input type="radio" name="member_perms"
+		     id="member_permission_{{permission.0}}"
+		     {% if permission.0 == chosen_member_permission %}checked="checked"{% endif %}
+		     value="{{permission.0}}" />
+	      <label style="float:none" for="member_permission_{{permission.0}}">{{permission.1}}</label>
+	    </li>
+	    {% endfor %}
+	  </ul>
+	</td> 
+	<td width="20;">&#160;</td> 
+	
+	<td width="50%"> 
+	  <h2>Other users can</h2> 
+	  <ul id="other_permissions">
+	    {% for permission in other_permissions %}
+	    <li style="clear:both; list-style-type:none">
+	      <input type="radio" name="other_perms"
+		     id="other_permission_{{permission.0}}"
+		     {% if permission.0 == chosen_nonmember_permission %}checked="checked"{% endif %}
+		     value="{{permission.0}}" />
+	      <label style="float:none" for="other_permission_{{permission.0}}">{{permission.1}}</label>
+	    </li>
+	    {% endfor %}
+	  </ul>
+	</td> 
+ 
+      </tr>
+    </tbody>
+  </table>
+
+  <hr/>
+  <h3>Additional Settings and Policies</h3>
+
+
+  <div class="clearfix">
+    <div class="input">
+      <input type="checkbox" id="archive_messages" name="archive_messages" checked="checked" />
+      <label for="archive_messages">
+	Archive messages
+      </label>
+    </div>
+  </div>
+  <div class="clearfix">
+    <div class="input">
+      <input type="checkbox" id="archive_attachments" name="archive_attachments" />
+      <label for="archive_attachments">
+	Archive attachments too
+      </label>
+    </div>
+  </div>
+  <div class="clearfix">
+    <div class="input">
+      <input type="checkbox" id="private_archives" name="private_archives" />
+      <label for="private_archives">
+	Make archives private (viewable only by logged-in list subscribers)
+      </label>
+    </div>
+  </div>
+
+  <pre>
+Self-Subscription Moderation Policy = Auto-Reject All; Auto-Accept All; Auto-Accept Team Members Only
+Post Moderation Policy = Auto-Reject All; Auto-Accept All; Auto-Accept Team Members Only
+  </pre>
+  
+  <script type="text/javascript">
+    $(window).load(function() {
+      $("input[type=radio][name=member_perms]").change(function() {
+        var value = $(this).val();
+        $("input[type=radio][name=other_perms]").each(function() {
+          if( $(this).val() > value ) {
+            $(this).attr("disabled", "disabled");
+          } else {
+            $(this).removeAttr("disabled");
+          }
+        });
+        if( $("input[name=other_perms]:checked").val() > value ) {
+          $("input[name=other_perms][value="+value+"]").attr("checked", "checked");
+        }
+      });
+
+      $("input[type=radio][name=other_perms]").change(function() {
+        var value = $(this).val();
+        $("input[type=radio][name=member_perms]").each(function() {
+          if( $(this).val() < value ) {
+            $(this).attr("disabled", "disabled");
+          } else {
+            $(this).removeAttr("disabled");
+          }
+        });
+        if( $("input[name=member_perms]:checked").val() <  value ) {
+          $("input[name=member_perms][value="+value+"]").attr("checked", "checked");
+        }
+      });
+
+    });
+  </script>
+
+  <hr>
+</div> 
+

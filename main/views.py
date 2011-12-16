@@ -17,6 +17,22 @@ def home(request):
 def index_of_mailing_lists(request, project_slug):
     if request.method == "GET":
         lists = MailingList.objects.all()
+
+        member_permissions = [(-1, "not even see this list"),
+                              (0, ("see the list, and its archives if they're not private; "
+                                   "and request subscription; and attempt to post messages")),
+                              (1, "and moderate queued posts"),
+                              (2, "and add allowed senders"),
+                              (3, "and edit the list's settings"),
+                              ]
+        other_permissions = [(-1, "not even see this list"),
+                             (0, ("see the list, and its archives if they're not private; "
+                                  "and request subscription; and attempt to post messages")),
+                             (1, "and moderate queued posts"),
+                             (2, "and add allowed senders"),
+                             (3, "and edit the list's settings"),
+                             ]
+
         return locals()
 
     slug = request.POST['slug']
