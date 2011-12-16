@@ -99,8 +99,7 @@ def mailing_list_moderate(request, project_slug, list_slug):
         post.delete()
         return redirect(".")
     elif action == "accept":
-        post.flagged = False
-        post.save()
+        post.unflag()
 
         if can_moderate_users and add_allowed_sender:
             user_roles, _ = LocalRoles.objects.get_or_create(

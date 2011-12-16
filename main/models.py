@@ -2,6 +2,9 @@ from ConfigParser import RawConfigParser
 from ConfigParser import NoOptionError, NoSectionError
 from StringIO import StringIO
 
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.db import models
 
 from opencore.signals import contact_confirmed
@@ -138,6 +141,21 @@ class MailingList(models.Model):
         else:
             return self.flag_post(author, subject, body)
 
+    def send_to_subscribers(self, post):
+        author = post.author.email
+        subject = post.subject
+        body = post.body
+
+        domain = settings.SITE_DOMAIN
+        subject = ''.join(subject.splitlines())
+
+        subscribers = LocalRoles.objects.filter(list=self, roles__contains="ListSubscriber")
+        subscribers = [i.username for i in subscribers]
+        subscribers = User.objects.filter(is_active=True, username__in=subscribers)
+        subscribers = [i.email for i in subscribers]
+
+        send_mail(subject, body, author, subscribers)
+
 class AllowedSender(models.Model):
     list = models.ForeignKey(MailingList)
     user = models.ForeignKey("auth.user")
@@ -152,7 +170,19 @@ class MailingListPost(models.Model):
 
     subject = models.CharField(max_length=100)
     body = models.TextField()
-    
+
+    def unflag(self):
+        self.flagged = False
+        self.save()
+        self.list.send_to_subscribers(self)
+
+    def save(self, *args, **kwargs):
+        already_sent = (self.pk is not None and not self.flagged)
+        result = models.Model.save(self, *args, **kwargs)
+        if self.pk is not None and not self.flagged and not already_sent:
+            self.list.send_to_subscribers(self)
+        return result
+
 PERMISSIONS = (
     ("LIST_VIEW",
      ("see the list, and its archives if they're not private; "
