@@ -4,7 +4,7 @@ from StringIO import StringIO
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.db import models
 
 from opencore.signals import contact_confirmed
@@ -46,6 +46,9 @@ class MailingList(models.Model):
 
     def __unicode__(self):
         return self.slug
+
+    def email_address(self):
+        return "%s@%s" % (self.slug, settings.SITE_DOMAIN)
 
     def set_options(self, kwargs, section="options"):
         if not self.config:
@@ -156,7 +159,9 @@ class MailingList(models.Model):
         subscribers = User.objects.filter(is_active=True, username__in=subscribers)
         subscribers = [i.email for i in subscribers]
 
-        send_mail(subject, body, author, subscribers)
+        email = EmailMessage(subject, body, author, subscribers, 
+                             headers={'Reply-To': self.email_address()})
+        email.send()
 
 class AllowedSender(models.Model):
     list = models.ForeignKey(MailingList)
