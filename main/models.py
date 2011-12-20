@@ -9,11 +9,10 @@ from django.db import models
 
 from opencore.signals import contact_confirmed
 
-class _NoDefault(object):
+class NoDefault(object):
     def __repr__(self):
         return "(no default)"
-NoDefault = _NoDefault()
-del _NoDefault
+NoDefault = NoDefault()
 
 class EmailContact(models.Model):
     email = models.EmailField()
