@@ -4,10 +4,11 @@ from StringIO import StringIO
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import send_mail
 from django.db import models
 
 from opencore.signals import contact_confirmed
+from opencore.email import EmailMessageWithEnvelopeTo
 
 class NoDefault(object):
     def __repr__(self):
@@ -159,8 +160,9 @@ class MailingList(models.Model):
         subscribers = User.objects.filter(is_active=True, username__in=subscribers)
         subscribers = [i.email for i in subscribers]
 
-        email = EmailMessage(subject, body, author, subscribers, 
-                             headers={'Reply-To': self.email_address()})
+        email = EmailMessageWithEnvelopeTo(
+            subject, body, author, subscribers, 
+            headers={'To': self.email_address()})
         email.send()
 
 class AllowedSender(models.Model):
