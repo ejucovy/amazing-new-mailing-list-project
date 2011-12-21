@@ -35,22 +35,25 @@ def index_of_mailing_lists(request, project_slug):
 
         return locals()
 
+    permissions_map = ['LIST_VIEW', 'LIST_POST_MODERATE',
+                       'LIST_ADD_ALLOWED_SENDERS', 'LIST_CONFIGURE']
+
     slug = request.POST['slug']
     list = MailingList.objects.create(slug=slug)
     list.save()
 
-    member_permissions = (
-        "LIST_VIEW",
-        )
-    authenticated_permissions = (
-        "LIST_VIEW",
-        )
-    anonymous_permissions = (
-        "LIST_VIEW",
-        )
+    member_perms = int(request.POST.get('member_perms', -1))
+    member_permissions = permissions_map[:member_perms + 1]
+
+    other_perms = int(request.POST.get('other_perms', -1))
+    authenticated_permissions = permissions_map[:other_perms + 1]
+
+    anonymous_permissions = ('LIST_VIEW',) if 'LIST_VIEW' in authenticated_permissions else ()
+
     allowed_sender_permissions = (
         "LIST_POST",
         )
+
     subscriber_permissions = (
         )
 
@@ -73,6 +76,17 @@ def index_of_mailing_lists(request, project_slug):
     p = RolePermissions(list=list, role="ListSubscriber")
     p.set_permissions(subscriber_permissions)
     p.save()
+
+    archive_attachments = 'archive_attachments' in request.POST
+    archive_messages = 'archive_messages' in request.POST
+    private_archives = 'private_archives' in request.POST
+
+    list.set_options(dict(
+            archive_attachments=archive_attachments,
+            archive_messages=archive_messages,
+            private_archives=private_archives,
+            ))
+    list.save()
     
     return redirect(".")
 
