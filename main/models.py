@@ -8,7 +8,7 @@ from django.core.mail import send_mail
 from django.db import models
 
 from opencore.signals import contact_confirmed
-from opencore.email import EmailMessageWithEnvelopeTo
+from main.email import EmailMessageWithEnvelopeTo
 
 class NoDefault(object):
     def __repr__(self):
