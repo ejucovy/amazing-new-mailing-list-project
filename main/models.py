@@ -262,7 +262,7 @@ class RolePermissions(models.Model):
     permissions = models.TextField()
 
     def __unicode__(self):
-        return "%s: %s" % (self.wiki, self.role)
+        return "%s: %s" % (self.list, self.role)
 
     def get_permissions(self):
         if not self.permissions:
