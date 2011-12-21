@@ -114,10 +114,18 @@
     {% endcomment %}
   </div>
 
-  <pre>
-Self-Subscription Moderation Policy = Auto-Reject All; Auto-Accept All; Auto-Accept Team Members Only
-  </pre>
-  
+  <div class="clearfix">
+    <div class="input">
+      <input type="checkbox" id="subscription_moderation_policy" name="subscription_moderation_policy" />
+      <label for="subscription_moderation_policy">
+        Moderate subscription requests
+      </label>
+    </div>
+    {% comment %}
+    Self-Subscription Moderation Policy = Auto-Reject All; Auto-Accept All; Auto-Accept Team Members Only
+    {% endcomment %}
+  </div>
+
   <script type="text/javascript">
     $(window).load(function() {
       $("input[type=radio][name=member_perms]").change(function() {

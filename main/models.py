@@ -112,6 +112,11 @@ class MailingList(models.Model):
         return self.get_option("post_moderation_policy", asbool=True,
                                default=False)
 
+    @property
+    def subscription_moderation_policy(self):
+        return self.get_option("subscription_moderation_policy", asbool=True,
+                               default=False)
+
     def get_permissions(self, user):
         if user.is_superuser:
             return set(i[0] for i in PERMISSIONS)
