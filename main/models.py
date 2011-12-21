@@ -107,6 +107,11 @@ class MailingList(models.Model):
         return self.get_option("private_archives", asbool=True,
                                default=False)
 
+    @property
+    def post_moderation_policy(self):
+        return self.get_option("post_moderation_policy", asbool=True,
+                               default=False)
+
     def get_permissions(self, user):
         if user.is_superuser:
             return set(i[0] for i in PERMISSIONS)
@@ -145,7 +150,14 @@ class MailingList(models.Model):
             post.save()
             return post
         else:
-            return self.flag_post(author, subject, body)
+            if self.post_moderation_policy:
+                return self.flag_post(author, subject, body)
+            else:
+                post = MailingListPost.objects.create(list=self, author=author,
+                                                      subject=subject, body=body)
+                post.save()
+                return post
+                
 
     def send_to_subscribers(self, post):
         author = post.author.email

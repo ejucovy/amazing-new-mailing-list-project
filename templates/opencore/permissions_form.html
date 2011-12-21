@@ -102,9 +102,20 @@
     </div>
   </div>
 
+  <div class="clearfix">
+    <div class="input">
+      <input type="checkbox" id="post_moderation_policy" name="post_moderation_policy" />
+      <label for="post_moderation_policy">
+        Moderate posts from non-allowed senders
+      </label>
+    </div>
+    {% comment %}
+    Post Moderation Policy = Auto-Reject All; Auto-Accept All; Auto-Accept Team Members Only
+    {% endcomment %}
+  </div>
+
   <pre>
 Self-Subscription Moderation Policy = Auto-Reject All; Auto-Accept All; Auto-Accept Team Members Only
-Post Moderation Policy = Auto-Reject All; Auto-Accept All; Auto-Accept Team Members Only
   </pre>
   
   <script type="text/javascript">
