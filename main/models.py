@@ -144,13 +144,14 @@ class MailingList(models.Model):
             username = user.username
             user_roles = LocalRoles.objects.filter(username=username, 
                                                    list=self)
-            roles = set("AUTHENTICATED")
+            roles = set(["Authenticated"])
         else:
             user_roles = []
-            roles = set("ANONYMOUS")
+            roles = set(["Anonymous"])
 
         for user_role in user_roles:
             roles.update(user_role.get_roles())
+
         role_permissions = RolePermissions.objects.filter(
             list=self, role__in=roles)
         permissions = set()
