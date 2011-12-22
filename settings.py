@@ -120,6 +120,10 @@ INSTALLED_APPS = (
 import djcelery
 djcelery.setup_loader()
 
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False
+}
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
