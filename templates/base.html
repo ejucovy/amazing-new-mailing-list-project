@@ -91,6 +91,11 @@
     </div>
 
     <div class="container">
+      {% for message in messages %}
+      <div class="alert-message {{ message.tags }}">
+	<p>{{ message|safe }}</p>
+      </div>
+      {% endfor %}
 
       {% block content %}
       {% endblock %}

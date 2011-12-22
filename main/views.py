@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
 from django.http import (HttpResponse,
                          HttpResponseForbidden, 
                          HttpResponseNotFound)
@@ -122,6 +123,7 @@ def mailing_list_moderate(request, project_slug, list_slug):
     
     if request.method == "GET":
         queued_posts = MailingListPost.objects.filter(list=list, flagged=True)
+        queued_subscribers = SubscriptionQueue.objects.filter(list=list)
         return locals()
 
     action = request.POST['action']
@@ -164,7 +166,11 @@ def request_subscription(request, project_slug, list_slug):
             list=list,
             )
         queue.save()
+        messages.info(request, 
+                      "Your request for moderation has been submitted to senior management")
     else:
         user_roles.add_role('ListSubscriber')
+        messages.success(request,
+                         "Congratulations, you're now subscribed.")
 
     return redirect('..')
