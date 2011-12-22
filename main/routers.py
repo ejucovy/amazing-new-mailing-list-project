@@ -37,8 +37,14 @@ def email_to_http(msg, contact):
     subject = msg['subject']
     body = get_payload(msg)
 
-    payload = dict(body=body, subject=subject, author=contact.user.username)
-    url = "%s/projects/fleem/lists/%s/" % (settings.SITE_DOMAIN, msg['to'].split("@")[0])
+    if subject.strip().lower() == "subscribe":
+        payload = dict()
+        url = "%s/projects/fleem/lists/%s/subscribe/" % (
+            settings.SITE_DOMAIN, msg['to'].split("@")[0])
+    else:
+        payload = dict(body=body, subject=subject, author=contact.user.username)
+        url = "%s/projects/fleem/lists/%s/" % (
+            settings.SITE_DOMAIN, msg['to'].split("@")[0])
 
     print headers
     resp, content = http.request(url, "POST", headers=headers, 

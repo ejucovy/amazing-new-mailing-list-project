@@ -201,7 +201,9 @@ def request_subscription(request, project_slug, list_slug):
     list = MailingList.objects.get(slug=list_slug)
     permissions = list.get_permissions(request.user)
 
-    if "LIST_VIEW" not in permissions or request.user.is_anonymous():
+    if "LIST_VIEW" not in permissions:
+        return HttpResponseForbidden()
+    if request.user.is_anonymous():
         return HttpResponseForbidden()
 
     if request.method == "GET":
