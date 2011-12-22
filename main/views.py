@@ -141,3 +141,30 @@ def mailing_list_moderate(request, project_slug, list_slug):
             user_roles.add_role("ListAllowedSender")
             user_roles.save()
         return redirect(".")
+
+@csrf_exempt
+@allow_http("GET", "POST")
+@rendered_with("main/request_subscription.html")
+def request_subscription(request, project_slug, list_slug):
+    list = MailingList.objects.get(slug=list_slug)
+    permissions = list.get_permissions(request.user)
+
+    if "LIST_VIEW" not in permissions or request.user.is_anonymous():
+        return HttpResponseForbidden()
+
+    if request.method == "GET":
+        return locals()
+
+    user_roles, _ = LocalRoles.objects.get_or_create(
+        username=request.user.username, list=list)
+
+    if list.subscription_moderation_policy:
+        queue, _ = SubscriptionQueue.objects.get_or_create(
+            user=request.user,
+            list=list,
+            )
+        queue.save()
+    else:
+        user_roles.add_role('ListSubscriber')
+
+    return redirect('..')

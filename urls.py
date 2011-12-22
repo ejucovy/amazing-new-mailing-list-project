@@ -13,6 +13,9 @@ urlpatterns = patterns(
     url(r'projects/(?P<project_slug>[\w\d-]+)/lists/(?P<list_slug>[\w\d-]+)/moderate/$',
         'main.views.mailing_list_moderate', name="mailing_list_moderate"),
 
+    url(r'projects/(?P<project_slug>[\w\d-]+)/lists/(?P<list_slug>[\w\d-]+)/subscribe/$',
+        'main.views.request_subscription', name="request_subscription"),
+
     url(r'projects/(?P<project_slug>[\w\d-]+)/lists/(?P<list_slug>[\w\d-]+)/$',
         'main.views.mailing_list', name="mailing_list"),
 

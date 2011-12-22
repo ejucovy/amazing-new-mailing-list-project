@@ -313,3 +313,7 @@ class RolePermissions(models.Model):
             permissions.remove(permission)
         self.permissions = permissions
         self.save()
+
+class SubscriptionQueue(models.Model):
+    list = models.ForeignKey(MailingList)
+    user = models.ForeignKey("auth.user")
