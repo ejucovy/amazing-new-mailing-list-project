@@ -138,6 +138,7 @@ def mailing_list_moderate_subscriber(request, project_slug, list_slug, subscribe
             user_roles.add_role("ListAllowedSender")
 
         user_roles.save()
+        queued_subscriber.delete()
         return redirect(list)
 
 @allow_http("POST")
