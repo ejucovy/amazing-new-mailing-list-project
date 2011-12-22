@@ -1,5 +1,6 @@
 from ConfigParser import RawConfigParser
-from ConfigParser import NoOptionError, NoSectionError
+from ConfigParser import (NoOptionError, NoSectionError, 
+                          MissingSectionHeaderError)
 from StringIO import StringIO
 
 from django.conf import settings
@@ -73,10 +74,16 @@ class MailingList(models.Model):
     def get_option(self, key, default=NoDefault, asbool=False, section="options"):
         config = RawConfigParser()
         fp = StringIO(self.config)
-        config.readfp(fp)
+        try:
+            config.readfp(fp)
+        except MissingSectionHeaderError:
+            if default is NoDefault:
+                raise
+            return default
         try:
             value = config.get(section, key)
-        except (NoOptionError, NoSectionError):
+        except (NoOptionError,
+                NoSectionError):
             if default is NoDefault:
                 raise
             return default
