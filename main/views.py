@@ -35,6 +35,8 @@ def index_of_mailing_lists(request, project_slug):
                              (3, "and add allowed senders"),
                              (4, "and edit the list's settings"),
                              ]
+        from main.policies import get_subscription_policies
+        subscription_policies = get_subscription_policies()
 
         return locals()
 
@@ -84,7 +86,7 @@ def index_of_mailing_lists(request, project_slug):
     archive_messages = 'archive_messages' in request.POST
     private_archives = 'private_archives' in request.POST
     post_moderation_policy = 'post_moderation_policy' in request.POST
-    subscription_moderation_policy = 'subscription_moderation_policy' in request.POST
+    subscription_moderation_policy = request.POST.get('subscription_moderation_policy')
 
     list.set_options(dict(
             archive_attachments=archive_attachments,

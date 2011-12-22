@@ -116,7 +116,12 @@
 
   <div class="clearfix">
     <div class="input">
-      <input type="checkbox" id="subscription_moderation_policy" name="subscription_moderation_policy" />
+      <select id="subscription_moderation_policy" 
+	      name="subscription_moderation_policy">
+	{% for key, policy in subscription_policies.items %}
+	<option value="{{ key }}">{{ policy.description|safe }}</option>
+	{% endfor %}
+      </select>
       <label for="subscription_moderation_policy">
         Moderate subscription requests
       </label>

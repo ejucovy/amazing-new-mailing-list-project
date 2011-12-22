@@ -158,6 +158,12 @@ LOGGING = {
     }
 }
 
+LIST_SUBSCRIPTION_MODERATION_POLICIES = [
+    ('medium', 'main.policies.subscription.MediumPolicy'),
+    ('open', 'main.policies.subscription.OpenPolicy'),
+    ('closed', 'main.policies.subscription.ClosedPolicy'),
+    ]
+
 # import local settings overriding the defaults
 try:
     from local_settings import *
