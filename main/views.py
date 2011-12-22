@@ -204,20 +204,7 @@ def request_subscription(request, project_slug, list_slug):
     if request.method == "GET":
         return locals()
 
-    user_roles, _ = LocalRoles.objects.get_or_create(
-        username=request.user.username, list=list)
+    success, queue, message_level, message = list.submit_subscription_request(request.user)
+    messages.add_message(request, message_level, message)
 
-    if list.subscription_moderation_policy:
-        queue, _ = SubscriptionQueue.objects.get_or_create(
-            user=request.user,
-            list=list,
-            )
-        queue.save()
-        messages.info(request, 
-                      "Your request for moderation has been submitted to senior management")
-    else:
-        user_roles.add_role('ListSubscriber')
-        messages.success(request,
-                         "Congratulations, you're now subscribed.")
-
-    return redirect('..')
+    return redirect(list)

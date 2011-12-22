@@ -160,6 +160,33 @@ class MailingList(models.Model):
         post.save()
         return post
 
+    def submit_subscription_request(self, user):
+        from django.contrib import messages
+
+
+        user_roles, _ = LocalRoles.objects.get_or_create(
+            username=user.username, list=self)
+        if user_roles.has_role("ListSubscriber"):
+            return (False, None, messages.WARNING,
+                    "You are already subscribed to this list!")
+
+        if self.subscription_moderation_policy:
+            queue, created = SubscriptionQueue.objects.get_or_create(
+                user=user,
+                list=self,
+                )
+            queue.save()
+            if created:
+                return (False, queue, messages.INFO,
+                        "Your request for moderation has been submitted to senior management.")
+            else:
+                return (False, queue, messages.WARNING,
+                        "You already have a subscription request pending moderation.")
+
+        user_roles.add_role("ListSubscriber")
+        return (True, None, messages.SUCCESS,
+                "Congratulations, you're now subscribed!")
+
     def submit_post(self, author, subject, body):
         permissions = self.get_permissions(author)
 
