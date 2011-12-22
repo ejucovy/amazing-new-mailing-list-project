@@ -49,8 +49,15 @@ class MailingList(models.Model):
     def __unicode__(self):
         return self.slug
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('mailing_list', ["fleem", self.slug], {})
+
     def email_address(self):
         return "%s@%s" % (self.slug, settings.SITE_DOMAIN)
+
+    def project_slug(self):
+        return "fleem"
 
     def set_options(self, kwargs, section="options"):
         if not self.config:

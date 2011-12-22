@@ -23,20 +23,22 @@ def index_of_mailing_lists(request, project_slug):
                               (0, ("see the list, and its archives if they're not private; "
                                    "and request subscription; and attempt to post messages")),
                               (1, "and moderate queued posts"),
-                              (2, "and add allowed senders"),
-                              (3, "and edit the list's settings"),
+                              (2, "and moderate queued subscription requests"),
+                              (3, "and add allowed senders"),
+                              (4, "and edit the list's settings"),
                               ]
         other_permissions = [(-1, "not even see this list"),
                              (0, ("see the list, and its archives if they're not private; "
                                   "and request subscription; and attempt to post messages")),
                              (1, "and moderate queued posts"),
-                             (2, "and add allowed senders"),
-                             (3, "and edit the list's settings"),
+                             (2, "and moderate queued subscription requests"),
+                             (3, "and add allowed senders"),
+                             (4, "and edit the list's settings"),
                              ]
 
         return locals()
 
-    permissions_map = ['LIST_VIEW', 'LIST_POST_MODERATE',
+    permissions_map = ['LIST_VIEW', 'LIST_POST_MODERATE', 'LIST_SUBSCRIBE_MODERATE',
                        'LIST_ADD_ALLOWED_SENDERS', 'LIST_CONFIGURE']
 
     slug = request.POST['slug']
@@ -110,26 +112,47 @@ def mailing_list(request, project_slug, list_slug):
     posts = MailingListPost.objects.filter(list=list, flagged=False)
     return locals()
 
-@allow_http("GET", "POST")
-@rendered_with("main/mailing_list_moderate.html")
-def mailing_list_moderate(request, project_slug, list_slug):
+@allow_http("POST")
+def mailing_list_moderate_subscriber(request, project_slug, list_slug, subscriber_id):
+    list = MailingList.objects.get(slug=list_slug)
+    permissions = list.get_permissions(request.user)
+
+    if "LIST_SUBSCRIBE_MODERATE" not in permissions:
+        return HttpResponseForbidden()
+
+    can_add_allowed_senders = ("LIST_ADD_ALLOWED_SENDERS" in permissions)
+
+    action = request.POST['action']
+    add_allowed_sender = request.POST.get('add_allowed_sender', False)
+    
+    queued_subscriber = SubscriptionQueue.objects.get(list=list, id=subscriber_id)
+    if action == "reject":
+        queued_subscriber.delete()
+        return redirect(list)
+    elif action == "accept":
+        user_roles, _ =  LocalRoles.objects.get_or_create(
+            username=queued_subscriber.user.username, list=list)
+        user_roles.add_role("ListSubscriber")
+
+        if can_add_allowed_senders and add_allowed_sender:
+            user_roles.add_role("ListAllowedSender")
+
+        user_roles.save()
+        return redirect(list)
+
+@allow_http("POST")
+def mailing_list_moderate_post(request, project_slug, list_slug, post_id):
     list = MailingList.objects.get(slug=list_slug)
     permissions = list.get_permissions(request.user)
 
     if "LIST_POST_MODERATE" not in permissions:
         return HttpResponseForbidden()
 
-    can_moderate_users = ("LIST_ADD_ALLOWED_SENDERS" in permissions)
-    
-    if request.method == "GET":
-        queued_posts = MailingListPost.objects.filter(list=list, flagged=True)
-        queued_subscribers = SubscriptionQueue.objects.filter(list=list)
-        return locals()
+    can_add_allowed_senders = ("LIST_ADD_ALLOWED_SENDERS" in permissions)
 
     action = request.POST['action']
-    post_id = request.POST['post']
     add_allowed_sender = request.POST.get('add_allowed_sender', False)
-
+    
     post = MailingListPost.objects.get(list=list, pk=post_id, flagged=True)
     if action == "reject":
         post.delete()
@@ -137,12 +160,36 @@ def mailing_list_moderate(request, project_slug, list_slug):
     elif action == "accept":
         post.unflag()
 
-        if can_moderate_users and add_allowed_sender:
+        if can_add_allowed_senders and add_allowed_sender:
             user_roles, _ = LocalRoles.objects.get_or_create(
                 username=post.author.username, list=list)
             user_roles.add_role("ListAllowedSender")
             user_roles.save()
-        return redirect(".")
+        return redirect(list)
+
+@allow_http("GET", "POST")
+@rendered_with("main/mailing_list_moderate.html")
+def mailing_list_moderate(request, project_slug, list_slug):
+    list = MailingList.objects.get(slug=list_slug)
+    permissions = list.get_permissions(request.user)
+
+    if "LIST_POST_MODERATE" not in permissions and "LIST_SUBSCRIBE_MODERATE" not in permissions:
+        return HttpResponseForbidden()
+
+    can_add_allowed_senders = ("LIST_ADD_ALLOWED_SENDERS" in permissions)
+    post_moderate = "LIST_POST_MODERATE" in permissions
+    subscribe_moderate = "LIST_SUBSCRIBE_MODERATE" in permissions
+
+    if request.method == "GET":
+        queued_posts = MailingListPost.objects.filter(list=list, flagged=True) \
+            if post_moderate else []
+        queued_subscribers = SubscriptionQueue.objects.filter(list=list) \
+            if subscribe_moderate else []
+        return locals()
+
+    action = request.POST['action']
+    post_id = request.POST['post']
+    add_allowed_sender = request.POST.get('add_allowed_sender', False)
 
 @csrf_exempt
 @allow_http("GET", "POST")

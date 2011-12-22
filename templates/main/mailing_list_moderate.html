@@ -3,6 +3,7 @@
 {% block content %}
 <h1>List {{ list.slug }}</h1>
 
+{% if post_moderate %}
 <table>
   <thead>
     <tr>
@@ -21,21 +22,58 @@
 	{{ post.author }}
       </td>
       <td>
-	<form method="POST">
+	<form method="POST" action="{% url mailing_list_moderate_post list.project_slug list.slug post.pk %}">
 	  {% csrf_token %}
-	  <input type="hidden" name="post" value="{{ post.pk }}" />
 	  <input type="hidden" name="action" value="accept" />
 
 	  <input type="submit" value="Accept" />
-	  {% if can_moderate_users %}
+	  {% if can_add_allowed_senders %}
 	  Add as allowed sender? <input type="checkbox" 
 					name="add_allowed_sender" />
 	  {% endif %}
 	</form>
 
-	<form method="POST">
+	<form method="POST" action="{% url mailing_list_moderate_post list.project_slug list.slug post.pk %}">
 	  {% csrf_token %}
-	  <input type="hidden" name="post" value="{{ post.pk }}" />
+          <input type="hidden" name="action" value="reject" />
+	  
+	  <input type="submit" value="Reject" />
+	</form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+{% if subscribe_moderate %}
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for request in queued_subscribers %}
+    <tr>
+      <td>
+	{{ request.user }}
+      </td>
+      <td>
+	<form method="POST" action="{% url mailing_list_moderate_subscriber list.project_slug list.slug request.pk %}">
+	  {% csrf_token %}
+	  <input type="hidden" name="action" value="accept" />
+
+	  <input type="submit" value="Accept" />
+	  {% if can_add_allowed_senders %}
+	  Add as allowed sender? <input type="checkbox" 
+					name="add_allowed_sender" />
+	  {% endif %}
+	</form>
+
+	<form method="POST" action="{% url mailing_list_moderate_subscriber list.project_slug list.slug request.pk %}">
+	  {% csrf_token %}
 	  <input type="hidden" name="action" value="reject" />
 	  
 	  <input type="submit" value="Reject" />
@@ -45,5 +83,6 @@
     {% endfor %}
   </tbody>
 </table>
+{% endif %}
 
 {% endblock %}

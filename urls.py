@@ -10,6 +10,11 @@ urlpatterns = patterns(
     url(r'^$', 'main.views.home', name='home'),
 
 
+    url(r'projects/(?P<project_slug>[\w\d-]+)/lists/(?P<list_slug>[\w\d-]+)/moderate/post/(?P<post_id>\d+)/$',
+        'main.views.mailing_list_moderate_post', name="mailing_list_moderate_post"),
+    url(r'projects/(?P<project_slug>[\w\d-]+)/lists/(?P<list_slug>[\w\d-]+)/moderate/subscriber/(?P<subscriber_id>\d+)/$',
+        'main.views.mailing_list_moderate_subscriber', name="mailing_list_moderate_subscriber"),
+
     url(r'projects/(?P<project_slug>[\w\d-]+)/lists/(?P<list_slug>[\w\d-]+)/moderate/$',
         'main.views.mailing_list_moderate', name="mailing_list_moderate"),
 
