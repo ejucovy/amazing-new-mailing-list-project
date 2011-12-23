@@ -213,3 +213,26 @@ def request_subscription(request, project_slug, list_slug):
     messages.add_message(request, message_level, message)
 
     return redirect(list)
+
+
+@csrf_exempt
+@allow_http("GET", "POST")
+@rendered_with("main/unsubscribe.html")
+def unsubscribe(request, project_slug, list_slug):
+    list = MailingList.objects.get(slug=list_slug)
+    permissions = list.get_permissions(request.user)
+
+    if "LIST_VIEW" not in permissions:
+        return HttpResponseForbidden()
+    if request.user.is_anonymous():
+        return HttpResponseForbidden()
+
+    if request.method == "GET":
+        return locals()
+
+    user_roles, _ = LocalRoles.objects.get_or_create(
+        username=request.user, list=list)
+    user_roles.remove_role("ListSubscriber")
+
+    messages.success(request, "Now you are not subscribed to this list.")
+    return redirect(list)

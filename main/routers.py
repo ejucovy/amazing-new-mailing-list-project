@@ -37,9 +37,13 @@ def email_to_http(msg, contact):
     subject = msg['subject']
     body = get_payload(msg)
 
-    if subject.strip().lower() == "subscribe":
+    if subject.strip().lower() in ("subscribe", "re:subscribe", "re: subscribe"):
         payload = dict()
         url = "%s/projects/fleem/lists/%s/subscribe/" % (
+            settings.SITE_DOMAIN, msg['to'].split("@")[0])
+    elif subject.strip().lower() in ("unsubscribe", "re:unsubscribe", "re: unsubscribe"):
+        payload = dict()
+        url = "%s/projects/fleem/lists/%s/unsubscribe/" % (
             settings.SITE_DOMAIN, msg['to'].split("@")[0])
     else:
         payload = dict(body=body, subject=subject, author=contact.user.username)
