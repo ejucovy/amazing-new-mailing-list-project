@@ -22,7 +22,7 @@ def process(msg):
     if not contact.confirmed:
         return defer(msg, contact)
 
-    return convert_to_web.delay(msg, contact)
+    return convert_to_web(msg, contact)
 
 def new_contact(msg):
     addr = msg.get("From")

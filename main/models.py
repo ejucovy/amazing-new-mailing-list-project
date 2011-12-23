@@ -54,10 +54,14 @@ class MailingList(models.Model):
         return ('mailing_list', ["fleem", self.slug], {})
 
     def email_address(self):
-        return "%s@%s" % (self.slug, settings.SITE_DOMAIN)
+        return "%s@%s" % (self.slug, self.fqdn)
 
     def project_slug(self):
         return "fleem"
+
+    @property
+    def fqdn(self):
+        return settings.SITE_DOMAIN.split(":")[1]
 
     def set_options(self, kwargs, section="options"):
         if not self.config:
@@ -202,8 +206,18 @@ class MailingList(models.Model):
         subscribers = [i.email for i in subscribers]
 
         email = EmailMessageWithEnvelopeTo(
-            subject, body, author, subscribers, 
-            headers={'To': self.email_address()})
+            subject, body, settings.DEFAULT_FROM_EMAIL, subscribers, 
+            headers={
+                'From': author,
+                'To': self.email_address(),
+                'List-ID': "<%s.%s.%s>" % (self.slug, self.project_slug, self.fqdn),
+                'List-Help': "<mailto:%s+help@%s>" % (self.slug, self.fqdn),
+                'List-Subscribe': "<mailto:%s+subscribe@%s" % (self.slug, self.fqdn),
+                'List-Unsubscribe': "<mailto:%s+unsubscribe@%s" % (self.slug, self.fqdn),
+                'List-Post': "<mailto:%s@%s" % (self.slug, self.fqdn), # XXX TODO "NO"
+                'List-Owner': "<mailto:%s+manager@%s" % (self.slug, self.fqdn),
+                'List-Archive': "<http://%s/%s>" % (self.fqdn, self.get_absolute_url()),
+                })
         email.send()
 
 class AllowedSender(models.Model):
