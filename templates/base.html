@@ -81,11 +81,18 @@
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
-          <form action="" class="pull-right">
-            <input class="input-small" type="text" placeholder="Username">
-            <input class="input-small" type="password" placeholder="Password">
+	  {% if request.user.is_anonymous %}
+          <form action="{% url auth_login %}" method="POST" class="pull-right">
+	    {% csrf_token %}
+            <input class="input-small" type="text" name="username" placeholder="Username">
+            <input class="input-small" type="password" name="password" placeholder="Password">
             <button class="btn" type="submit">Sign in</button>
           </form>
+	  {% else %}
+	  <div style="padding-top: 0.75em; font-weight: bold; color: white" class="pull-right">
+	    Welcome, {{ request.user }}!
+	  </div>
+	  {% endif %}
         </div>
       </div>
     </div>
