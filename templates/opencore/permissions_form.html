@@ -104,7 +104,12 @@
 
   <div class="clearfix">
     <div class="input">
-      <input type="checkbox" id="post_moderation_policy" name="post_moderation_policy" />
+      <select id="post_moderation_policy" 
+	      name="post_moderation_policy">
+	{% for key, policy in post_policies.items %}
+	<option value="{{ key }}">{{ policy.description|safe }}</option>
+	{% endfor %}
+      </select>
       <label for="post_moderation_policy">
         Moderate posts from non-allowed senders
       </label>

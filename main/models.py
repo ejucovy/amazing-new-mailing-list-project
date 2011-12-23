@@ -126,11 +126,6 @@ class MailingList(models.Model):
                                default=False)
 
     @property
-    def post_moderation_policy(self):
-        return self.get_option("post_moderation_policy", asbool=True,
-                               default=False)
-
-    @property
     def subscription_moderation_policy(self):
         policies = settings.LIST_SUBSCRIPTION_MODERATION_POLICIES
         policy_key = self.get_option("subscription_moderation_policy", asbool=False,
@@ -138,6 +133,16 @@ class MailingList(models.Model):
 
         from main.policies import get_subscription_policy
         policy = get_subscription_policy(policy_key)
+        return policy
+
+    @property
+    def post_moderation_policy(self):
+        policies = settings.LIST_POST_MODERATION_POLICIES
+        policy_key = self.get_option("post_moderation_policy", asbool=False,
+                                     default=policies[0][0])
+
+        from main.policies import get_post_policy
+        policy = get_post_policy(policy_key)
         return policy
         
     def get_permissions(self, user):
@@ -162,35 +167,12 @@ class MailingList(models.Model):
         for role_permission in role_permissions:
             permissions.update(role_permission.get_permissions())
         return permissions
-
-    def flag_post(self, author, subject, body):
-        post = MailingListPost.objects.create(list=self, author=author,
-                                              subject=subject, body=body,
-                                              flagged=True)
-        post.save()
-        return post
-
+    
     def submit_subscription_request(self, user):
-        from django.contrib import messages
         return self.subscription_moderation_policy.process_request(self, user)
 
     def submit_post(self, author, subject, body):
-        permissions = self.get_permissions(author)
-
-        if "LIST_POST" in permissions:
-            post = MailingListPost.objects.create(list=self, author=author,
-                                                  subject=subject, body=body)
-            post.save()
-            return post
-        else:
-            if self.post_moderation_policy:
-                return self.flag_post(author, subject, body)
-            else:
-                post = MailingListPost.objects.create(list=self, author=author,
-                                                      subject=subject, body=body)
-                post.save()
-                return post
-                
+        return self.post_moderation_policy.process_request(self, author, subject, body)
 
     def send_to_subscribers(self, post):
         author = post.author.email
@@ -235,6 +217,10 @@ class MailingListPost(models.Model):
 
     subject = models.CharField(max_length=100)
     body = models.TextField()
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('mailing_list_view_post', ["fleem", self.list.slug, self.id], {})
 
     def unflag(self):
         self.flagged = False

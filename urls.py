@@ -24,6 +24,9 @@ urlpatterns = patterns(
     url(r'projects/(?P<project_slug>[\w\d-]+)/lists/(?P<list_slug>[\w\d-]+)/unsubscribe/$',
         'main.views.unsubscribe', name="unsubscribe"),
 
+    url(r'projects/(?P<project_slug>[\w\d-]+)/lists/(?P<list_slug>[\w\d-]+)/post/(?P<post_id>\d+)/$',
+        'main.views.mailing_list_view_post', name="mailing_list_view_post"),
+
     url(r'projects/(?P<project_slug>[\w\d-]+)/lists/(?P<list_slug>[\w\d-]+)/$',
         'main.views.mailing_list', name="mailing_list"),
 

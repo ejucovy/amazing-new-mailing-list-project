@@ -163,6 +163,11 @@ LIST_SUBSCRIPTION_MODERATION_POLICIES = [
     ('open', 'main.policies.subscription.OpenPolicy'),
     ('closed', 'main.policies.subscription.ClosedPolicy'),
     ]
+LIST_POST_MODERATION_POLICIES = [
+    ('medium', 'main.policies.post.MediumPolicy'),
+    ('open', 'main.policies.post.OpenPolicy'),
+    ('closed', 'main.policies.post.ClosedPolicy'),
+    ]
 
 # import local settings overriding the defaults
 try:

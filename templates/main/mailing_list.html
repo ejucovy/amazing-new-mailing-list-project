@@ -9,4 +9,13 @@
 {% endfor %}
 </ol>
 
+<form method="POST">
+  {% csrf_token %}
+  <input type="text" name="subject" placeholder="Subject" />
+  <br />
+  <textarea name="body"></textarea>
+  <br/>
+  <input type="submit" value="Post a message" />
+</form>
+
 {% endblock %}
