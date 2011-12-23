@@ -218,6 +218,7 @@ class MailingList(models.Model):
                 'List-Owner': "<mailto:%s+manager@%s" % (self.slug, self.fqdn),
                 'List-Archive': "<http://%s/%s>" % (self.fqdn, self.get_absolute_url()),
                 })
+        email.content_subtype = "text/html"
         email.send()
 
 class AllowedSender(models.Model):
