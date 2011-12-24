@@ -15,6 +15,10 @@ class Project(models.Model):
     slug = models.CharField(max_length=100, unique=True)
     policy = models.CharField(choices=PROJECT_POLICIES, db_index=True)
 
+    @property
+    def featurelets(self):
+        return ["listen"]
+
     def members(self):
         return ProjectMember.objects.filter(project=self)
 
