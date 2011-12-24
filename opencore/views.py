@@ -7,20 +7,32 @@ from django.shortcuts import redirect
 from djangohelpers import (rendered_with,
                            allow_http)
 from opencore.models import *
+from opencore.forms import ProjectForm
 
 @allow_http("GET", "POST")
 def index_of_projects(request):
     pass
 
-def _create_project(request):
-    pass
+@allow_http("GET", "POST")
+@rendered_with("opencore/create_project.html")
+def create_project(request):
+    if request.method == "GET":
+        form = ProjectForm()
+        return locals()
+    form = ProjectForm(request.POST)
+    if not form.is_valid():
+        return locals()
+    project = form.save(request.user)
+    messages.success(request, "Your project has been created.  Good job.")
+    return redirect(project)    
 
 @allow_http("GET")
+@rendered_with("opencore/project_home.html")
 def project_home(request, project_slug):
     project = Project.objects.get(slug=project_slug)
     if not project.viewable(request):
         return HttpResponseForbidden()
-    pass
+    return locals()
 
 def _edit_project(request):
     pass

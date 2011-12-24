@@ -8,7 +8,9 @@ urlpatterns = patterns(
     'opencore.views',
 
     url('^$', 'index_of_projects', name='index_of_projects'),
+    url('^create/$', 'create_project', name='create_project'),
 
+    ## Project views
     url('^(?P<project_slug>[\w\d-]+)/$', 'project_home', name='project_home'),
     url('^(?P<project_slug>[\w\d-]+)/preferences/$', 'project_preferences', 
         name='project_preferences'),
@@ -20,4 +22,5 @@ urlpatterns = patterns(
     url('^(?P<project_slug>[\w\d-]+)/info\.xml$', 'project_info', name='project_info'),
     url('^(?P<project_slug>[\w\d-]+)/members\.xml$', 'project_info_members',
         name='project_info_members'),
-)
+    
+    )

@@ -15,6 +15,13 @@ class Project(models.Model):
     slug = models.CharField(max_length=100, unique=True)
     policy = models.CharField(choices=PROJECT_POLICIES, max_length=100, db_index=True)
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ("project_home", [self.slug], {})
+
+    def __unicode__(self):
+        return u"%s: %s" % (self.slug, self.policy)
+
     @property
     def featurelets(self):
         return ["listen"]
@@ -46,3 +53,7 @@ class ProjectMember(models.Model):
     user = models.ForeignKey("auth.User")
     project = models.ForeignKey(Project)
     role = models.CharField(choices=PROJECT_ROLES, max_length=100, db_index=True)
+
+    def __unicode__(self):
+        return u": ".join((unicode(self.user), unicode(self.project), self.role))
+
