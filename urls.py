@@ -9,6 +9,7 @@ urlpatterns = patterns(
     url(r'^$', 'main.views.home', name='home'),
 
     url(r'projects/(?P<project_slug>[\w\d-]+)/lists/', include('listen.urls')),
+    url(r'projects/', include('opencore.urls')),
 
     (r'^accounts/', include('registration.backends.default.urls')),
     

@@ -1,0 +1,8 @@
+<info>
+  <policy>{{ project.policy }}</policy>
+  <featurelets>
+    {% for featurelet in project.featurelets %}
+    <featurelet>{{ featurelet }}</featurelet>
+    {% endfor %}
+  </featurelets>
+</info>
