@@ -324,5 +324,3 @@ class SubscriptionQueue(models.Model):
     list = models.ForeignKey(MailingList)
     user = models.ForeignKey("auth.user")
 
-
-
