@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from registration.models import RegistrationProfile
 from zope.dottedname.resolve import resolve
 from main.models import EmailContact, DeferredMessage
-from celery.decorators import task
+from celery.task import task
 
 def random_name():
     return "".join(random.choice("abcdefghijklmnopqrxtuvwxyz"
