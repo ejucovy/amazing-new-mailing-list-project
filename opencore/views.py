@@ -68,7 +68,7 @@ def project_info(request, project_slug):
     project = Project.objects.get(slug=project_slug)
     if not project.viewable(request):
         return HttpResponseForbidden()
-    return {}    
+    return locals()
 
 @allow_http("GET")
 @rendered_with("opencore/project_info_members.xml")
@@ -76,4 +76,4 @@ def project_info_members(request, project_slug):
     project = Project.objects.get(slug=project_slug)
     if not project.viewable(request):
         return HttpResponseForbidden()
-    return {}
+    return locals()
