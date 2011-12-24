@@ -7,7 +7,8 @@ from django.shortcuts import redirect
 from djangohelpers import (rendered_with,
                            allow_http)
 from opencore.models import *
-from opencore.forms import ProjectForm
+from opencore.forms import (ProjectForm, 
+                            TeamForm)
 
 @allow_http("GET", "POST")
 def index_of_projects(request):
@@ -54,13 +55,23 @@ def project_team(request, project_slug):
     pass
 
 @allow_http("GET", "POST")
+@rendered_with("opencore/project_team_manage.html")
 def project_team_manage(request, project_slug):
     project = Project.objects.get(slug=project_slug)
     if not project.viewable(request):
         return HttpResponseForbidden()
     if not project.manageable(request):
         return HttpResponseForbidden()
-    pass
+    if request.method == "GET":
+        form = TeamForm(project)
+        return locals()
+    form = TeamForm(project, data=request.POST)
+    if not form.is_valid():
+        return locals()
+    memberships = form.save()
+    messages.success(request, "Modified %s memberships" % len(memberships))
+    return redirect(project)
+
 
 @allow_http("GET")
 @rendered_with("opencore/project_info.xml")

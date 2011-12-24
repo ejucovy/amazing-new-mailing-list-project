@@ -34,13 +34,22 @@ class Project(models.Model):
             return True
         if self.policy in ("policy_medium", "policy_open"):
             return True
-        if ProjectMember.objects.exists(user=request.user, project=self):
+        if request.user.is_anonymous():
+            return False
+        try:
+            membership = ProjectMember.objects.get(
+                user=request.user, project=self)
+        except ProjectMember.DoesNotExist:
+            pass
+        else:
             return True
         return False
 
     def manageable(self, request):
         if request.user.is_superuser:
             return True
+        if request.user.is_anonymous():
+            return False
         try:
             membership = ProjectMember.objects.get(user=request.user, project=self)
         except ProjectMember.DoesNotExist:
