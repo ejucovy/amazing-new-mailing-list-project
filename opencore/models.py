@@ -13,7 +13,7 @@ PROJECT_POLICIES = (
 
 class Project(models.Model):
     slug = models.CharField(max_length=100, unique=True)
-    policy = models.CharField(choices=PROJECT_POLICIES, db_index=True)
+    policy = models.CharField(choices=PROJECT_POLICIES, max_length=100, db_index=True)
 
     @property
     def featurelets(self):
@@ -45,4 +45,4 @@ class Project(models.Model):
 class ProjectMember(models.Model):
     user = models.ForeignKey("auth.User")
     project = models.ForeignKey(Project)
-    role = models.CharField(choices=PROJECT_ROLES, db_index=True)
+    role = models.CharField(choices=PROJECT_ROLES, max_length=100, db_index=True)
