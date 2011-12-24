@@ -160,14 +160,14 @@ LOGGING = {
 }
 
 LIST_SUBSCRIPTION_MODERATION_POLICIES = [
-    ('medium', 'main.policies.subscription.MediumPolicy'),
-    ('open', 'main.policies.subscription.OpenPolicy'),
-    ('closed', 'main.policies.subscription.ClosedPolicy'),
+    ('medium', 'listen.policies.subscription.MediumPolicy'),
+    ('open', 'listen.policies.subscription.OpenPolicy'),
+    ('closed', 'listen.policies.subscription.ClosedPolicy'),
     ]
 LIST_POST_MODERATION_POLICIES = [
-    ('medium', 'main.policies.post.MediumPolicy'),
-    ('open', 'main.policies.post.OpenPolicy'),
-    ('closed', 'main.policies.post.ClosedPolicy'),
+    ('medium', 'listen.policies.post.MediumPolicy'),
+    ('open', 'listen.policies.post.OpenPolicy'),
+    ('closed', 'listen.policies.post.ClosedPolicy'),
     ]
 
 # import local settings overriding the defaults
