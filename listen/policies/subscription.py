@@ -5,7 +5,8 @@ for various workflows.  In order to be active a policy must be referenced by dot
 """
 
 from django.contrib import messages
-from main.models import LocalRoles
+from listen.models import LocalRoles
+from listen.models import SubscriptionQueue
 
 class OpenPolicy(object):
 
@@ -28,8 +29,6 @@ class MediumPolicy(object):
     description = "Moderate subscription requests"
 
     def process_request(self, list, user):
-        from main.models import SubscriptionQueue, LocalRoles
-
         user_roles, _ = LocalRoles.objects.get_or_create(
             username=user.username, list=list)
         if user_roles.has_role("ListSubscriber"):

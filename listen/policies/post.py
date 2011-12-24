@@ -5,7 +5,7 @@ for various workflows.  In order to be active a policy must be referenced by dot
 """
 
 from django.contrib import messages
-from main.models import LocalRoles, MailingListPost
+from listen.models import LocalRoles, MailingListPost
 
 class BasePolicy(object):
 
