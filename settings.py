@@ -115,6 +115,7 @@ INSTALLED_APPS = (
     'djcelery',
     'djkombu',
     'opencore',
+    'listen',
     'main',
     )
 import djcelery
