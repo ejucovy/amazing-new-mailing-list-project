@@ -172,7 +172,18 @@ class MailingList(models.Model):
         return self.subscription_moderation_policy.process_request(self, user)
 
     def submit_post(self, author, subject, body):
-        return self.post_moderation_policy.process_request(self, author, subject, body)
+        was_accepted, post, message_level, message = \
+            self.post_moderation_policy.process_request(self, author, subject, body)
+        post_submitted.send(sender=self.__class__, post=post, 
+                            author=author, subject=subject, body=body)
+        if was_accepted:
+            post_accepted.send(sender=self.__class__, post=post, 
+                               author=author, subject=subject, body=body)
+        elif post is None:
+            post_rejected.send(sender=self.__class__, post=post, 
+                               author=author, subject=subject, body=body)
+
+        return (was_accepted, post, message_level, message)
 
     def send_to_subscribers(self, post):
         author = post.author.email
@@ -342,3 +353,5 @@ class RolePermissions(models.Model):
 class SubscriptionQueue(models.Model):
     list = models.ForeignKey(MailingList)
     user = models.ForeignKey("auth.user")
+
+
