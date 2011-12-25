@@ -1,5 +1,6 @@
 from django.db import models
 from opencore import listeners
+from main.email import EmailMessageWithEnvelopeTo
 
 PROJECT_ROLES = (
     ("ProjectAdmin", "Project Admin"),
@@ -28,6 +29,17 @@ class Project(models.Model):
 
     def members(self):
         return ProjectMember.objects.filter(project=self)
+
+    def admins(self):
+        return ProjectMember.objects.filter(project=self, role="ProjectAdmin")
+
+    def has_member(self, user):
+        if user.is_anonymous:
+            return False
+        try:
+            return ProjectMember.objects.get(project=self, user=user)
+        except ProjectMember.DoesNotExist:
+            return False
 
     def viewable(self, request):
         if request.user.is_superuser:
@@ -71,14 +83,33 @@ class ProjectInvite(models.Model):
     project = models.ForeignKey(Project)
     inviter = models.ForeignKey("auth.User", related_name="inviter")
 
-    def remind(self):
-        pass
+    def remind(self, message=None):
+        email = EmailMessageWithEnvelopeTo(
+            "Reminder: Your invitation to join %s" % project,
+            "Don't forget that you've been invited to join %s" % project + (
+                '\n%s' % message if message else ''),
+            settings.DEFAULT_FROM_EMAIL,
+            self.user.email)
+        email.send()
 
-    def send(self):
-        pass
+    def send(self, message=None):
+        email = EmailMessageWithEnvelopeTo(
+            "Invitation to join %s" % self.project,
+            "You've been invited to join %s" % self.project + (
+                '\n%s' % message if message else ''),
+            settings.DEFAULT_FROM_EMAIL,
+            self.user.email)
+        email.send()
 
 class ProjectRequest(models.Model):
     user = models.ForeignKey("auth.User")
     project = models.ForeignKey(Project)
 
-
+    def send(self, message=None):
+        email = EmailMessageWithEnvelopeTo(
+            "Request to join %s" % self.project,
+            "%s wants to join %s" % self.project + (
+                '\n%s' % message if message else ''),
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email for user in self.project.admins])
+        email.send()

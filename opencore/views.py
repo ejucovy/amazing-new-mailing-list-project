@@ -65,8 +65,25 @@ def project_team_request_membership(request, project_slug):
     project = Project.objects.get(slug=project_slug)
     if not project.viewable(request):
         return HttpResponseForbidden()
-    pass
+    if request.user.is_anonymous:
+        return HttpResponseForbidden()
 
+    if project.has_member(request.user):
+        messages.error(request, "You are already a member of this project.")
+        return redirect(project)
+
+    if request.method == "GET":
+        return locals()
+
+    prequest, created = ProjectRequest.objects.get_or_create(user=request.user, project=project)
+    if not created:
+        messages.info(request, "You already have a request filed.")
+        return redirect(project)
+
+    prequest.send(request.POST.get("message"))
+    messages.success(request, "Good luck with your request!")
+    return redirect(project)
+    
 @allow_http("POST")
 def project_team_invite(request, project_slug):
     project = Project.objects.get(slug=project_slug)
@@ -77,17 +94,22 @@ def project_team_invite(request, project_slug):
 
     username = request.POST['username']
     user = User.objects.get(username=username)
+
+    if project.has_member(user):
+        messages.error(request, "That guy is already a member of this project.")
+        return redirect(project)
+
     try:
         invite = ProjectInvite.objects.get(user=user, project=project)
     except ProjectInvite.DoesNotExist:
         invite = ProjectInvite.objects.create(user=user, project=project,
                                               inviter=request.user)
     else:
-        invite.remind()
+        invite.remind(request.POST.get("message"))
         messages.info(request,
                       "A reminder has been sent to %s" % user.username)
         return redirect(project)
-    invite.send()
+    invite.send(request.POST.get("message"))
     messages.success(request,
                      "An invitation has been sent to %s" % user.username)
     return redirect(project)
