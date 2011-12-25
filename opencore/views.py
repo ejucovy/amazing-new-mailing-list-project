@@ -11,8 +11,13 @@ from opencore.forms import (ProjectForm,
                             TeamForm)
 
 @allow_http("GET", "POST")
+@rendered_with("opencore/index_of_projects.html")
 def index_of_projects(request):
-    pass
+    projects = Project.objects.exclude(policy="closed")
+    if request.user.is_authenticated():
+        projects = projects | \
+            Project.objects.filter(projectmember=request.user)
+    return locals()
 
 @allow_http("GET", "POST")
 @rendered_with("opencore/create_project.html")
