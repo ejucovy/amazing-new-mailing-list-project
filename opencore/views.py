@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import (HttpResponse,
                          HttpResponseForbidden, 
@@ -58,6 +59,38 @@ def project_team(request, project_slug):
     if not project.viewable(request):
         return HttpResponseForbidden()
     pass
+
+@allow_http("GET", "POST")
+def project_team_request_membership(request, project_slug):
+    project = Project.objects.get(slug=project_slug)
+    if not project.viewable(request):
+        return HttpResponseForbidden()
+    pass
+
+@allow_http("POST")
+def project_team_invite(request, project_slug):
+    project = Project.objects.get(slug=project_slug)
+    if not project.viewable(request):
+        return HttpResponseForbidden()
+    if not project.manageable(request):
+        return HttpResponseForbidden()
+
+    username = request.POST['username']
+    user = User.objects.get(username=username)
+    try:
+        invite = ProjectInvite.objects.get(user=user, project=project)
+    except ProjectInvite.DoesNotExist:
+        invite = ProjectInvite.objects.create(user=user, project=project,
+                                              inviter=request.user)
+    else:
+        invite.remind()
+        messages.info(request,
+                      "A reminder has been sent to %s" % user.username)
+        return redirect(project)
+    invite.send()
+    messages.success(request,
+                     "An invitation has been sent to %s" % user.username)
+    return redirect(project)
 
 @allow_http("GET", "POST")
 @rendered_with("opencore/project_team_manage.html")

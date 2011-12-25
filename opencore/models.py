@@ -66,3 +66,19 @@ class ProjectMember(models.Model):
     def __unicode__(self):
         return u": ".join((unicode(self.user), unicode(self.project), self.role))
 
+class ProjectInvite(models.Model):
+    user = models.ForeignKey("auth.User")
+    project = models.ForeignKey(Project)
+    inviter = models.ForeignKey("auth.User", related_name="inviter")
+
+    def remind(self):
+        pass
+
+    def send(self):
+        pass
+
+class ProjectRequest(models.Model):
+    user = models.ForeignKey("auth.User")
+    project = models.ForeignKey(Project)
+
+

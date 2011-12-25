@@ -7,4 +7,11 @@
   {{ form.as_p }}
   <input type="submit" />
 </form>
+
+<h2>Invite Somebody</h2>
+<form method="POST" action="{% url project_team_invite project.slug %}">
+  {% csrf_token %}
+  Who? <input name="username"></input>
+  <input type="submit" />
+</form>
 {% endblock %}

@@ -18,6 +18,13 @@ urlpatterns = patterns(
     url('^(?P<project_slug>[\w\d-]+)/manage-team/$', 'project_team_manage', 
         name='project_team_manage'),
 
+    url('^(?P<project_slug>[\w\d-]+)/manage-team/invite/$', 
+        'project_team_invite', name='project_team_invite'),
+    url('^(?P<project_slug>[\w\d-]+)/request-membership/$', 
+        'project_team_request_membership', 
+        name='project_team_request_membership'),
+
+
     ## API endpoints
     url('^(?P<project_slug>[\w\d-]+)/info\.xml$', 'project_info', name='project_info'),
     url('^(?P<project_slug>[\w\d-]+)/members\.xml$', 'project_info_members',
