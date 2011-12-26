@@ -8,6 +8,15 @@
   <input type="submit" />
 </form>
 
+Or, if you already have an account that you'd like to associate this
+email address with, just log in here:
+<form method="POST">
+  {% csrf_token %}
+  <input type="hidden" name="claim_account" value="true" />
+  {{ login_form.as_p }}
+  <input type="submit" />
+</form>
+
 <h2>Your Invitations</h2>
 {% if not invites %}
 You do not have any pending project invitations.
