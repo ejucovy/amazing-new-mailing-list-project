@@ -10,6 +10,7 @@ urlpatterns = patterns(
 
     url(r'projects/(?P<project_slug>[\w\d-]+)/lists/', include('listen.urls')),
     url(r'projects/', include('opencore.urls')),
+    url(r'people/', include('opencore.members.urls')),
 
     (r'^accounts/', include('registration.backends.default.urls')),
     

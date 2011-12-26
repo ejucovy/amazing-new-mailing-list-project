@@ -115,6 +115,7 @@ INSTALLED_APPS = (
     'djcelery',
     'djkombu',
     'opencore',
+    'opencore.members',
     'listen',
     'main',
     )
