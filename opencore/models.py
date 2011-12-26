@@ -35,7 +35,7 @@ class Project(models.Model):
         return ProjectMember.objects.filter(project=self, role="ProjectAdmin")
 
     def has_member(self, user):
-        if user.is_anonymous:
+        if user.is_anonymous():
             return False
         try:
             return ProjectMember.objects.get(project=self, user=user)
@@ -99,7 +99,7 @@ class ProjectInvite(models.Model):
             "You've been invited to join %s" % self.project + (
                 '\n%s' % message if message else ''),
             settings.DEFAULT_FROM_EMAIL,
-            self.user.email)
+            [self.user.email])
         email.send()
 
 class ProjectRequest(models.Model):
