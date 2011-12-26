@@ -26,14 +26,14 @@ Invitation to join {{ invite.project.slug }}
       action="{% url member_project_invites invite.user.username invite.project.slug %}">
   {% csrf_token %}
   <input type="hidden" name="action" value="accept" />
-  <input type="submit" name="Accept" />
+  <input type="submit" value="Accept" />
 </form>
 
 <form method="POST"
       action="{% url member_project_invites invite.user.username invite.project.slug %}">
   {% csrf_token %}
   <input type="hidden" name="action" value="reject" />
-  <input type="submit" name="Decline" />
+  <input type="submit" value="Decline" />
 </form>
 
 <hr/>

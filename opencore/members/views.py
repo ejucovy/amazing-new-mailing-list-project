@@ -38,11 +38,11 @@ def member_project_invites(request, username, project_slug):
     if len(invites) == 0:
         messages.error(
             request, "No such invitation exists.")
-        return redirect("member_account", [user.username])
+        return redirect("member_account", user.username)
 
     invites.delete()
     if request.POST['action'] == 'reject':
-        return redirect("member_account", [user.username])
+        return redirect("member_account", user.username)
     
     assert request.POST['action'] == 'accept'
     if ProjectMember.objects.filter(
@@ -50,13 +50,13 @@ def member_project_invites(request, username, project_slug):
         messages.info(
             request, 
             "You are already a member of this project.")
-        return redirect("member_account", [user.username])
+        return redirect("member_account", user.username)
         
     membership = ProjectMember(user=user, project=project,
                                role="ProjectMembeR")
     membership.save()
     messages.success(request, "Poof!  You're a member.")
-    return redirect("member_account", [user.username])
+    return redirect("member_account", user.username)
 
 def member_profile(request, username):
     pass

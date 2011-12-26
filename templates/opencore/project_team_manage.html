@@ -2,11 +2,33 @@
 
 {% block content %}
 <h1>{{ project }}</h1>
+<h2>Your Team</h2>
 <form method="POST">
   {% csrf_token %}
   {{ form.as_p }}
   <input type="submit" />
 </form>
+
+<h2>Invitations</h2>
+{% if not invites %}
+Your project does not have any pending invitations.
+{% endif %}
+
+<ul>
+  {% for invite in invites %}
+  <li>
+    {{ invite.inviter }} invited {{ invite.user }} to join the project on {{ invite.created }}.
+
+    <form method="POST" action="{% url project_team_invite project.slug %}">
+      {% csrf_token %}
+      <input type="hidden" name="username"
+	     value="{{ invite.user.username }}"></input>
+      <input type="submit" value="Remind" />
+    </form>
+    
+  </li>
+  {% endfor %}
+</ul>
 
 <h2>Invite Somebody</h2>
 <form method="POST" action="{% url project_team_invite project.slug %}">

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from opencore import listeners
 from main.email import EmailMessageWithEnvelopeTo
@@ -85,11 +86,11 @@ class ProjectInvite(models.Model):
 
     def remind(self, message=None):
         email = EmailMessageWithEnvelopeTo(
-            "Reminder: Your invitation to join %s" % project,
-            "Don't forget that you've been invited to join %s" % project + (
+            "Reminder: Your invitation to join %s" % self.project,
+            "Don't forget that you've been invited to join %s" % self.project + (
                 '\n%s' % message if message else ''),
             settings.DEFAULT_FROM_EMAIL,
-            self.user.email)
+            [self.user.email])
         email.send()
 
     def send(self, message=None):

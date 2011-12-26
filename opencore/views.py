@@ -122,9 +122,13 @@ def project_team_manage(request, project_slug):
         return HttpResponseForbidden()
     if not project.manageable(request):
         return HttpResponseForbidden()
+
     if request.method == "GET":
+        invites = ProjectInvite.objects.filter(
+            project=project)
         form = TeamForm(project)
         return locals()
+
     form = TeamForm(project, data=request.POST)
     if not form.is_valid():
         return locals()
