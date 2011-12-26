@@ -53,7 +53,7 @@ def member_project_invites(request, username, project_slug):
         return redirect("member_account", user.username)
         
     membership = ProjectMember(user=user, project=project,
-                               role="ProjectMembeR")
+                               role="ProjectMember")
     membership.save()
     messages.success(request, "Poof!  You're a member.")
     return redirect("member_account", user.username)
