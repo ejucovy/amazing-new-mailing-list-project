@@ -40,7 +40,7 @@ class TeamForm(forms.Form):
         if ( (role == 'N' or role == 'D') and
              ProjectMember.objects.filter(
                 project=self.project, role="ProjectAdmin").count() == 
-             len(memberships) ):
+             len(memberships.filter(role="ProjectAdmin")) ):
             self._errors['memberships'] = forms.util.ErrorList([
                     "You must leave at least one Project Admin."])
             del self.cleaned_data['memberships']
