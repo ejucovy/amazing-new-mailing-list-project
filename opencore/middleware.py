@@ -51,3 +51,42 @@ class AuthenticationMiddleware(object):
             for key in request.__cookies_to_delete__:
                 response.delete_cookie(key)
         return response
+
+
+class ContainerMiddleware(object):
+
+    def process_request(self, request):
+        path_info = request.path_info
+        path_info = path_info.strip("/").split("/")
+        setattr(request, 'opencore_context', None)
+        if len(path_info) == 1:
+            return
+        if path_info[0] == "projects":
+            request.opencore_context = ("projects", path_info[1])
+        elif path_info[0] == "people":
+            request.opencore_context = ("people", path_info[1])
+    
+    def process_template_response(self, request, response):
+        context = getattr(request, 'opencore_context', None)
+        if not context:
+            response.context_data['topnav'] = [
+                ("/people/", "People"),
+                ("/projects/", "Projects"),
+                ("/projects/create/", "Start a Project"),
+                ]
+            return response
+        if context[0] == "projects":
+            response.context_data['topnav'] = [
+                ("/projects/%s/" % context[1], "Summary"),
+                ("/projects/%s/manage-team/" % context[1], "Manage Team"),
+                ("/projects/%s/preferences/" % context[1], "Preferences"),
+                ("/projects/%s/request-membership/" % context[1], "Join Project"),
+                ]
+            return response
+        if context[0] == "people":
+            response.context_data['topnav'] = [
+                ("/people/%s/" % context[1], "Home"),
+                ("/people/%s/profile/" % context[1], "Profile"),
+                ("/people/%s/account/" % context[1], "Account"),
+                ]
+            return response

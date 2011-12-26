@@ -85,6 +85,7 @@ MIDDLEWARE_CLASSES = (
     'inactive_user_workflow.middleware.CatchInactiveUsersMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'opencore.middleware.ContainerMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
