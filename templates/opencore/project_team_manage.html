@@ -25,6 +25,13 @@ Your project does not have any pending invitations.
 	     value="{{ invite.user.username }}"></input>
       <input type="submit" value="Remind" />
     </form>
+    <form method="POST" action="{% url project_team_invite project.slug %}">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="remove" />
+      <input type="hidden" name="username"
+	     value="{{ invite.user.username }}"></input>
+      <input type="submit" value="Remove" />
+    </form>
     
   </li>
   {% endfor %}

@@ -95,6 +95,16 @@ def project_team_invite(request, project_slug):
     username = request.POST['username']
     user = User.objects.get(username=username)
 
+    if request.POST.get("action") == "remove":
+        try:
+            invite = ProjectInvite.objects.get(user=user, project=project)
+        except ProjectInvite.DoesNotExist:
+            messages.warn(request, "No invitation to remove!")
+            return redirect(project)
+        invite.delete()
+        messages.info(request, "The invitation has been retracted.")
+        return redirect(project)
+
     if project.has_member(user):
         messages.error(request, "That guy is already a member of this project.")
         return redirect(project)
