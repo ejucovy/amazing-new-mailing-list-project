@@ -1,0 +1,9 @@
+-r ./requirements.txt
+Deliverance
+libopencore
+WSGIFilter
+PasteScript
+Paste
+PasteDeploy
+WebOb
+django-supervisor

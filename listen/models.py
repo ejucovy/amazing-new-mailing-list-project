@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db import models
 
-from opencore.signals import contact_confirmed
 from main.email import EmailMessageWithEnvelopeTo
 
 class NoDefault(object):
@@ -20,22 +19,21 @@ class MailingList(models.Model):
     slug = models.CharField(max_length=100, unique=True)
     config = models.TextField(null=True, blank=True)
 
+    container_id = models.CharField(max_length=100, null=True, blank=True)
+
     def __unicode__(self):
         return self.slug
 
     @models.permalink
     def get_absolute_url(self):
-        return ('mailing_list', ["fleem", self.slug], {})
+        return ('mailing_list', [self.slug], {})
 
     def email_address(self):
         return "%s@%s" % (self.slug, self.fqdn)
 
-    def project_slug(self):
-        return "fleem"
-
     @property
     def fqdn(self):
-        return settings.SITE_DOMAIN.split(":")[1]
+        return settings.SITE_DOMAIN
 
     def set_options(self, kwargs, section="options"):
         if not self.config:
@@ -172,12 +170,17 @@ class MailingList(models.Model):
         subscribers = User.objects.filter(is_active=True, username__in=subscribers)
         subscribers = [i.email for i in subscribers]
 
+        if self.container_id:
+            uid = "%s.%s" % (self.slug, self.container_id)
+        else:
+            uid = self.slug
+
         email = EmailMessageWithEnvelopeTo(
             subject, body, settings.DEFAULT_FROM_EMAIL, subscribers, 
             headers={
                 'From': author,
                 'To': self.email_address(),
-                'List-ID': "<%s.%s.%s>" % (self.slug, self.project_slug, self.fqdn),
+                'List-ID': "<%s.%s>" % (uid, self.fqdn),
                 'List-Help': "<mailto:%s+help@%s>" % (self.slug, self.fqdn),
                 'List-Subscribe': "<mailto:%s+subscribe@%s" % (self.slug, self.fqdn),
                 'List-Unsubscribe': "<mailto:%s+unsubscribe@%s" % (self.slug, self.fqdn),
@@ -199,9 +202,11 @@ class MailingListPost(models.Model):
     subject = models.CharField(max_length=100)
     body = models.TextField()
 
+    in_reply_to = models.ForeignKey('self', null=True)
+
     @models.permalink
     def get_absolute_url(self):
-        return ('mailing_list_view_post', ["fleem", self.list.slug, self.id], {})
+        return ('mailing_list_view_post', [self.list.slug, self.id], {})
 
     def unflag(self):
         self.flagged = False
