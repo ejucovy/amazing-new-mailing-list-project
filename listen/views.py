@@ -18,9 +18,10 @@ from listen.policies import get_subscription_policies, get_post_policies
 
 @allow_http("GET", "POST")
 @rendered_with("main/index_of_mailing_lists.html")
-def index_of_mailing_lists(request, project_slug):
+def index_of_mailing_lists(request):
     if request.method == "GET":
-        lists = MailingList.objects.all()
+        lists = MailingList.objects.filter(
+            container_id=request.opencore_container)
 
         member_permissions = [(-1, "not even see this list"),
                               (0, ("see the list, and its archives if they're not private; "
@@ -47,7 +48,8 @@ def index_of_mailing_lists(request, project_slug):
                        'LIST_ADD_ALLOWED_SENDERS', 'LIST_CONFIGURE']
 
     slug = request.POST['slug']
-    list = MailingList.objects.create(slug=slug)
+    list = MailingList.objects.create(
+        slug=slug, container_id=request.opencore_container)
     list.save()
 
     member_perms = int(request.POST.get('member_perms', -1))
@@ -105,8 +107,9 @@ def index_of_mailing_lists(request, project_slug):
 @csrf_exempt
 @allow_http("GET", "POST")
 @rendered_with("main/mailing_list.html")
-def mailing_list(request, project_slug, list_slug):
-    list = MailingList.objects.get(slug=list_slug)
+def mailing_list(request, list_slug):
+    list = MailingList.objects.get(slug=list_slug,
+                                   container_id=request.opencore_container)
     if request.method == "POST":
 
         created, post, message_level, message = list.submit_post(
@@ -122,8 +125,9 @@ def mailing_list(request, project_slug, list_slug):
     return locals()
 
 @allow_http("POST")
-def mailing_list_moderate_subscriber(request, project_slug, list_slug, subscriber_id):
-    list = MailingList.objects.get(slug=list_slug)
+def mailing_list_moderate_subscriber(request, list_slug, subscriber_id):
+    list = MailingList.objects.get(slug=list_slug, 
+                                   container_id=request.opencore_container)
     permissions = list.get_permissions(request.user)
 
     if "LIST_SUBSCRIBE_MODERATE" not in permissions:
@@ -151,8 +155,9 @@ def mailing_list_moderate_subscriber(request, project_slug, list_slug, subscribe
         return redirect(list)
 
 @allow_http("GET")
-def mailing_list_view_post(request, project_slug, list_slug, post_id):
-    list = MailingList.objects.get(slug=list_slug)
+def mailing_list_view_post(request, list_slug, post_id):
+    list = MailingList.objects.get(slug=list_slug, 
+                                   container_id=request.opencore_container)
     permissions = list.get_permissions(request.user)
 
     if "LIST_VIEW" not in permissions:
@@ -162,8 +167,9 @@ def mailing_list_view_post(request, project_slug, list_slug, post_id):
     return HttpResponse(post.body, content_type="text/plain")
 
 @allow_http("POST")
-def mailing_list_moderate_post(request, project_slug, list_slug, post_id):
-    list = MailingList.objects.get(slug=list_slug)
+def mailing_list_moderate_post(request, list_slug, post_id):
+    list = MailingList.objects.get(slug=list_slug,
+                                   container_id=request.opencore_container)
     permissions = list.get_permissions(request.user)
 
     if "LIST_POST_MODERATE" not in permissions:
@@ -190,8 +196,9 @@ def mailing_list_moderate_post(request, project_slug, list_slug, post_id):
 
 @allow_http("GET", "POST")
 @rendered_with("main/mailing_list_moderate.html")
-def mailing_list_moderate(request, project_slug, list_slug):
-    list = MailingList.objects.get(slug=list_slug)
+def mailing_list_moderate(request, list_slug):
+    list = MailingList.objects.get(slug=list_slug,
+                                   container_id=request.opencore_container)
     permissions = list.get_permissions(request.user)
 
     if "LIST_POST_MODERATE" not in permissions and "LIST_SUBSCRIBE_MODERATE" not in permissions:
@@ -215,8 +222,9 @@ def mailing_list_moderate(request, project_slug, list_slug):
 @csrf_exempt
 @allow_http("GET", "POST")
 @rendered_with("main/request_subscription.html")
-def request_subscription(request, project_slug, list_slug):
-    list = MailingList.objects.get(slug=list_slug)
+def request_subscription(request, list_slug):
+    list = MailingList.objects.get(slug=list_slug,
+                                   container_id=request.opencore_container)
     permissions = list.get_permissions(request.user)
 
     if "LIST_VIEW" not in permissions:
@@ -236,8 +244,9 @@ def request_subscription(request, project_slug, list_slug):
 @csrf_exempt
 @allow_http("GET", "POST")
 @rendered_with("main/unsubscribe.html")
-def unsubscribe(request, project_slug, list_slug):
-    list = MailingList.objects.get(slug=list_slug)
+def unsubscribe(request, list_slug):
+    list = MailingList.objects.get(slug=list_slug, 
+                                   container_id=request.opencore_container)
     permissions = list.get_permissions(request.user)
 
     if "LIST_VIEW" not in permissions:

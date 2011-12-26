@@ -5,7 +5,7 @@
 
 <ol>
 {% for list in lists %}
-<li><a href="{% url mailing_list 'fleem' list.slug %}">{{ list }}</a></li>
+<li><a href="{% url mailing_list list.slug %}">{{ list }}</a></li>
 {% endfor %}
 </ol>
 
