@@ -137,6 +137,24 @@ def project_team_manage(request, project_slug):
         invites = ProjectInvite.objects.filter(
             project=project)
         form = TeamForm(project)
+
+        if ( 'invite_search' in request.GET
+             and request.GET['invite_search'] is not None
+             and request.GET['invite_search'].strip() ):
+            invite_search = request.GET['invite_search'].strip()
+            invite_search_results = ( User.objects.filter(
+                    username__icontains=invite_search) |
+                                      User.objects.filter(
+                    email__icontains=invite_search) |
+                                      User.objects.filter(
+                    first_name__icontains=invite_search) |
+                                      User.objects.filter(
+                    last_name__icontains=invite_search) 
+                                      )
+            invite_search_results = invite_search_results.exclude(
+                projectinvite__project=project).exclude(
+                projectmember__project=project)
+
         return locals()
 
     form = TeamForm(project, data=request.POST)

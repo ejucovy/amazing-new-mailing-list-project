@@ -38,9 +38,22 @@ Your project does not have any pending invitations.
 </ul>
 
 <h2>Invite Somebody</h2>
+{% if invite_search_results %}
+{% for user in invite_search_results %}
 <form method="POST" action="{% url project_team_invite project.slug %}">
   {% csrf_token %}
-  Who? <input name="username"></input>
-  <input type="submit" />
+  {{ user }}
+  <input name="username" type="hidden" value="{{ user.username }}"></input>
+  <input type="submit" value="Invite" />
+</form>
+{% endfor %}
+
+Or search again:
+{% endif %}
+
+<form action="{% url project_team_manage project.slug %}">
+  Search for a user to invite
+  by username, name or email: <input name="invite_search"></input>
+  <input type="submit" value="Search" />
 </form>
 {% endblock %}
