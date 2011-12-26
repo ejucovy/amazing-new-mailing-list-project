@@ -1,7 +1,5 @@
 from django.dispatch import Signal
 
-from listen.models import MailingListPost, SubscriptionQueue
-
 post_submitted = Signal(providing_args=['post', 'author', 'subject', 'body'])
 post_rejected = Signal(providing_args=['post', 'author', 'subject', 'body'])
 post_accepted = Signal(providing_args=['post', 'author', 'subject', 'body'])

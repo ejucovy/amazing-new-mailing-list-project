@@ -10,6 +10,8 @@ from django.db import models
 
 from main.email import EmailMessageWithEnvelopeTo
 
+from listen.signals import *
+
 class NoDefault(object):
     def __repr__(self):
         return "(no default)"
@@ -103,7 +105,7 @@ class MailingList(models.Model):
         policy_key = self.get_option("subscription_moderation_policy", asbool=False,
                                      default=policies[0][0])
 
-        from main.policies import get_subscription_policy
+        from listen.policies import get_subscription_policy
         policy = get_subscription_policy(policy_key)
         return policy
 
@@ -113,7 +115,7 @@ class MailingList(models.Model):
         policy_key = self.get_option("post_moderation_policy", asbool=False,
                                      default=policies[0][0])
 
-        from main.policies import get_post_policy
+        from listen.policies import get_post_policy
         policy = get_post_policy(policy_key)
         return policy
         
