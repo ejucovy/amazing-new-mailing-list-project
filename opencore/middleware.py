@@ -7,6 +7,8 @@ from libopencore.query_project import (get_users_for_project,
                                        admin_post)
 from topp.utils.memorycache import cache as memorycache
 
+from opencore.models import Project
+
 def get_user(request):
     try:
         morsel = BaseCookie(request.META['HTTP_COOKIE'])['__ac']
@@ -79,26 +81,48 @@ class ContainerMiddleware(object):
             request.opencore_context = ("projects", path_info[1])
         elif path_info[0] == "people":
             request.opencore_context = ("people", path_info[1])
-    
-    def process_template_response(self, request, response):
-        context = getattr(request, 'opencore_context', None)
-        if not context:
-            response.context_data['topnav'] = Topnav([
+
+    def inject_topnav_site(self, request, response):
+        response.context_data['topnav'] = Topnav([
                 ("/people/", "People"),
                 ("/projects/", "Projects"),
                 ("/projects/create/", "Start a Project"),
                 ])
-            response.context_data['topnav'].set_context(
-                settings.SITE_NAME, "/")
-            return response
+        response.context_data['topnav'].set_context(
+            settings.SITE_NAME, "/")
+        return response        
+    
+    def process_template_response(self, request, response):
+        context = getattr(request, 'opencore_context', None)
+        if not context:
+            return self.inject_topnav_site(request, response)
+
         if context[0] == "projects":
-            response.context_data['topnav'] = Topnav([
-                ("/projects/%s/" % context[1], "Summary"),
-                ("/projects/%s/lists/" % context[1], "Mailing Lists"),
-                ("/projects/%s/manage-team/" % context[1], "Manage Team"),
-                ("/projects/%s/preferences/" % context[1], "Preferences"),
-                ("/projects/%s/request-membership/" % context[1], "Join Project"),
-                ])
+            try:
+                project = Project.objects.get(slug=context[1])
+            except Project.DoesNotExist:
+                return self.inject_topnav_site(request, response)
+            if not project.viewable(request):
+                return self.inject_topnav_site(request, response)
+            if project.manageable(request):
+                response.context_data['topnav'] = Topnav([
+                        ("/projects/%s/" % context[1], "Summary"),
+                        ("/projects/%s/lists/" % context[1], "Mailing Lists"),
+                        ("/projects/%s/team/" % context[1], "Team"),
+                        ("/projects/%s/manage-team/" % context[1], "Manage Team"),
+                        ("/projects/%s/preferences/" % context[1], "Preferences"),
+                        ])
+            else:
+                response.context_data['topnav'] = Topnav([
+                        ("/projects/%s/" % context[1], "Summary"),
+                        ("/projects/%s/lists/" % context[1], "Mailing Lists"),
+                        ("/projects/%s/team/" % context[1], "Team"),
+                        ])
+                if not project.has_member(request.user):
+                    response.context_data['topnav'].items.append(
+                        ("/projects/%s/request-membership/" % context[1], 
+                         "Join Project"),
+                        )
             response.context_data['topnav'].set_context(
                 context[1], "/projects/%s/" % context[1]
                 )
