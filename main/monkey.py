@@ -16,12 +16,6 @@ def post_activation_redirect(self, request, user):
     Return the name of the URL to redirect to after successful
     account activation.
     """
-
-    if user.has_usable_password():
-        messages.success(request, "Congratulations!  Welcome.")
-        return ('member_account', (user.username), {})
-
-    messages.success(request, "Welcome!  Please choose a username and password for your account.")
-    return ('member_account_first_time', [user.username], {})
-
+    messages.success(request, "Congratulations!  Welcome.")
+    return ('member_account', [user.username], {})
 DefaultBackend.post_activation_redirect = post_activation_redirect

@@ -13,9 +13,6 @@ urlpatterns = patterns(
     url('^(?P<username>[\w\d-]+)/account/$', 'member_account', 
         name='member_account'),
 
-    url('^(?P<username>[\w\d-]+)/account/welcome/$', 
-        'member_account_first_time', name='member_account_first_time'),
-
     url('^(?P<username>[\w\d-]+)/account/project-invites/(?P<project_slug>[\w\d-]+)/$', 'member_project_invites', name='member_project_invites'),
 
     url('^(?P<username>[\w\d-]+)/profile/$', 'member_profile', name='member_profile'),

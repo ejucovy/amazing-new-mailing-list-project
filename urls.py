@@ -14,7 +14,7 @@ urlpatterns = patterns(
     url(r'projects/', include('opencore.urls')),
     url(r'people/', include('opencore.members.urls')),
 
-    (r'^accounts/', include('registration.backends.default.urls')),
+    (r'^accounts/', include('opencore.registration_workflow.urls')),
     
     url(r'^accounts/inactive/$',
         direct_to_template,
