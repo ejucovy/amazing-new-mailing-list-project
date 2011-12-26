@@ -22,7 +22,7 @@
 	{{ post.author }}
       </td>
       <td>
-	<form method="POST" action="{% url mailing_list_moderate_post list.project_slug list.slug post.pk %}">
+	<form method="POST" action="{% url mailing_list_moderate_post list.slug post.pk %}">
 	  {% csrf_token %}
 	  <input type="hidden" name="action" value="accept" />
 
@@ -33,7 +33,7 @@
 	  {% endif %}
 	</form>
 
-	<form method="POST" action="{% url mailing_list_moderate_post list.project_slug list.slug post.pk %}">
+	<form method="POST" action="{% url mailing_list_moderate_post list.slug post.pk %}">
 	  {% csrf_token %}
           <input type="hidden" name="action" value="reject" />
 	  
@@ -61,7 +61,7 @@
 	{{ request.user }}
       </td>
       <td>
-	<form method="POST" action="{% url mailing_list_moderate_subscriber list.project_slug list.slug request.pk %}">
+	<form method="POST" action="{% url mailing_list_moderate_subscriber list.slug request.pk %}">
 	  {% csrf_token %}
 	  <input type="hidden" name="action" value="accept" />
 
@@ -72,7 +72,7 @@
 	  {% endif %}
 	</form>
 
-	<form method="POST" action="{% url mailing_list_moderate_subscriber list.project_slug list.slug request.pk %}">
+	<form method="POST" action="{% url mailing_list_moderate_subscriber list.slug request.pk %}">
 	  {% csrf_token %}
 	  <input type="hidden" name="action" value="reject" />
 	  
