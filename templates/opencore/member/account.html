@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for invite in invites %}
+Invitation to join {{ invite.project.slug }}
+
+<form method="POST"
+      action="{% url member_project_invites invite.user.username invite.project.slug %}">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="accept" />
+  <input type="submit" name="Accept" />
+</form>
+
+<form method="POST"
+      action="{% url member_project_invites invite.user.username invite.project.slug %}">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="reject" />
+  <input type="submit" name="Decline" />
+</form>
+
+<hr/>
+{% endfor %}
+{% endblock %}
