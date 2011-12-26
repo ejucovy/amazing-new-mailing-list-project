@@ -75,10 +75,12 @@
     <div class="topbar">
       <div class="fill">
         <div class="container">
-          <a class="brand" href="#">Project name</a>
+          <a class="brand" href="{{ topnav.container.href }}">
+	    {{ topnav.container.name }}
+	  </a>
 
           <ul class="nav">
-	    {% for item in topnav %}
+	    {% for item in topnav.items %}
             <li>
 	      <a href="{{ item.0|safe }}">{{ item.1 }}</a>
 	    </li>
@@ -108,8 +110,10 @@
       </div>
       {% endfor %}
 
-      {% block content %}
-      {% endblock %}
+      <div id="oc-content-container" class="container">
+	{% block content %}
+	{% endblock %}
+      </div>
 
     </div> <!-- /container -->
 

@@ -22,6 +22,11 @@ def random_name():
                                  "ABCDEFGHIJKLMNOPQRXTUVWXYZ"
                                  "1234567890@.+-_") for i in range(30))
 
+@allow_http("GET")
+@rendered_with("base.html")
+def theme(request):
+    return locals()
+
 @allow_http("GET", "POST")
 @rendered_with("opencore/index_of_projects.html")
 def index_of_projects(request):

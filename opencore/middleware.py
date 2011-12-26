@@ -52,13 +52,27 @@ class AuthenticationMiddleware(object):
                 response.delete_cookie(key)
         return response
 
+class Topnav(object):
+    def __init__(self, items):
+        self.items = items
+        self.container = None
+
+    def set_context(self, name, href):
+        self.container = {'name': name, 'href': href}
 
 class ContainerMiddleware(object):
 
     def process_request(self, request):
+        setattr(request, 'opencore_context', None)
+
+        if request.META.get("HTTP_X_OPENPLANS_PROJECT") is not None:
+            project = request.META.get("HTTP_X_OPENPLANS_PROJECT")
+            request.opencore_context = ("projects", project)
+            return
+
         path_info = request.path_info
         path_info = path_info.strip("/").split("/")
-        setattr(request, 'opencore_context', None)
+
         if len(path_info) == 1:
             return
         if path_info[0] == "projects":
@@ -69,24 +83,32 @@ class ContainerMiddleware(object):
     def process_template_response(self, request, response):
         context = getattr(request, 'opencore_context', None)
         if not context:
-            response.context_data['topnav'] = [
+            response.context_data['topnav'] = Topnav([
                 ("/people/", "People"),
                 ("/projects/", "Projects"),
                 ("/projects/create/", "Start a Project"),
-                ]
+                ])
+            response.context_data['topnav'].set_context(
+                settings.SITE_NAME, "/")
             return response
         if context[0] == "projects":
-            response.context_data['topnav'] = [
+            response.context_data['topnav'] = Topnav([
                 ("/projects/%s/" % context[1], "Summary"),
                 ("/projects/%s/manage-team/" % context[1], "Manage Team"),
                 ("/projects/%s/preferences/" % context[1], "Preferences"),
                 ("/projects/%s/request-membership/" % context[1], "Join Project"),
-                ]
+                ])
+            response.context_data['topnav'].set_context(
+                context[1], "/projects/%s/" % context[1]
+                )
             return response
         if context[0] == "people":
-            response.context_data['topnav'] = [
+            response.context_data['topnav'] = Topnav([
                 ("/people/%s/" % context[1], "Home"),
                 ("/people/%s/profile/" % context[1], "Profile"),
                 ("/people/%s/account/" % context[1], "Account"),
-                ]
+                ])
+            response.context_data['topnav'].set_context(
+                context[1], "/people/%s/" % context[1]
+                )
             return response
