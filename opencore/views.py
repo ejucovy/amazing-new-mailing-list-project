@@ -65,7 +65,7 @@ def project_team_request_membership(request, project_slug):
     project = Project.objects.get(slug=project_slug)
     if not project.viewable(request):
         return HttpResponseForbidden()
-    if request.user.is_anonymous:
+    if request.user.is_anonymous():
         return HttpResponseForbidden()
 
     if project.has_member(request.user):
