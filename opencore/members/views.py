@@ -22,6 +22,8 @@ def member_account(request, username):
     if user != request.user:
         return HttpResponseForbidden()
     invites = ProjectInvite.objects.filter(user=user)
+
+    memberships = ProjectMember.objects.filter(user=user)
     return locals()
 
 @allow_http("POST")
