@@ -23,7 +23,7 @@ LANGUAGE_CODE = 'en-us'
 INTERNAL_IPS = ('127.0.0.1',
                 )
 
-SITE_DOMAIN = "localhost:8000"
+SITE_DOMAIN = "localhost:7999"
 SITE_NAME = 'OpenCore Site'
 
 SITE_ID = 1

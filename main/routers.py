@@ -2,6 +2,7 @@ from django.conf import settings
 import libopencore.auth
 from httplib2 import Http
 import urllib
+from listen.models import MailingList
 
 def get_payload(msg):
     best_choice = None
@@ -37,26 +38,33 @@ def email_to_http(msg, contact):
     subject = msg['subject']
     body = get_payload(msg)
 
+    ### XXX TODO: componentization of this list-locating logic?
     list = msg['to'].split("@")[0]
     command = None
     if '+' in list:
         list, command = list.split("+")
         command = command.lower()
+    list = MailingList.objects.get(slug=list)
+    project = list.container_id
+    assert project and project.endswith(".projects")
+    project = project[:-len(".projects")]
 
     if command == "subscribe":
         payload = dict()
-        url = "%s/projects/fleem/lists/%s/subscribe/" % (
-            settings.SITE_DOMAIN, list)
+        url = "http://%s/projects/%s/lists/%s/subscribe/" % (
+            settings.SITE_DOMAIN, project, list)
     elif command == "unsubscribe":
         payload = dict()
-        url = "%s/projects/fleem/lists/%s/unsubscribe/" % (
-            settings.SITE_DOMAIN, list)
+        url = "http://%s/projects/%s/lists/%s/unsubscribe/" % (
+            settings.SITE_DOMAIN, project, list)
     else:
-        payload = dict(body=body, subject=subject, author=contact.user.username)
-        url = "%s/projects/fleem/lists/%s/" % (
-            settings.SITE_DOMAIN, list)
+        payload = dict(body=body, subject=subject, 
+                       author=contact.user.username)
+        url = "http://%s/projects/%s/lists/%s/" % (
+            settings.SITE_DOMAIN, project, list)
 
     print headers
     resp, content = http.request(url, "POST", headers=headers, 
                                  body=urllib.urlencode(payload))
+    print resp, content
     return resp, content
