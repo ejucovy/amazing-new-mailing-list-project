@@ -94,6 +94,7 @@ class ContainerMiddleware(object):
         if context[0] == "projects":
             response.context_data['topnav'] = Topnav([
                 ("/projects/%s/" % context[1], "Summary"),
+                ("/projects/%s/lists/" % context[1], "Mailing Lists"),
                 ("/projects/%s/manage-team/" % context[1], "Manage Team"),
                 ("/projects/%s/preferences/" % context[1], "Preferences"),
                 ("/projects/%s/request-membership/" % context[1], "Join Project"),

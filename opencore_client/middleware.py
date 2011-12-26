@@ -17,28 +17,3 @@ class ContainerMiddleware(object):
         if project is not None:
             request.opencore_context = ("projects", project)
             request.opencore_container = "%s.projects" % project
-
-    def process_template_response(self, request, response):
-        context = getattr(request, 'opencore_context', None)
-        if not context:
-            response.context_data['topnav'] = [
-                ("/people/", "People"),
-                ("/projects/", "Projects"),
-                ("/projects/create/", "Start a Project"),
-                ]
-            return response
-        if context[0] == "projects":
-            response.context_data['topnav'] = [
-                ("/projects/%s/" % context[1], "Summary"),
-                ("/projects/%s/manage-team/" % context[1], "Manage Team"),
-                ("/projects/%s/preferences/" % context[1], "Preferences"),
-                ("/projects/%s/request-membership/" % context[1], "Join Project"),
-                ]
-            return response
-        if context[0] == "people":
-            response.context_data['topnav'] = [
-                ("/people/%s/" % context[1], "Home"),
-                ("/people/%s/profile/" % context[1], "Profile"),
-                ("/people/%s/account/" % context[1], "Account"),
-                ]
-            return response
