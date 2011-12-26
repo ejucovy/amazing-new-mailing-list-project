@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Your New Account</h1>
+<form method="POST">
+  {% csrf_token %}
+  {{ registration_form.as_p }}
+  <input type="submit" />
+</form>
+
+<h2>Your Invitations</h2>
+{% if not invites %}
+You do not have any pending project invitations.
+{% endif %}
+
+{% for invite in invites %}
+Invitation to join {{ invite.project.slug }}
+
+<form method="POST"
+      action="{% url member_project_invites invite.user.username invite.project.slug %}">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="accept" />
+  <input type="submit" value="Accept" />
+</form>
+
+<form method="POST"
+      action="{% url member_project_invites invite.user.username invite.project.slug %}">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="reject" />
+  <input type="submit" value="Decline" />
+</form>
+
+<hr/>
+{% endfor %}
+{% endblock %}

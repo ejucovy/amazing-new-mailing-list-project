@@ -4,6 +4,8 @@ from django.views.generic.simple import direct_to_template
 from django.contrib import admin
 admin.autodiscover()
 
+from main import monkey
+
 urlpatterns = patterns(
     '',
     url(r'^$', 'main.views.home', name='home'),

@@ -7,6 +7,8 @@ from django.http import (HttpResponse,
 from django.shortcuts import redirect 
 from djangohelpers import (rendered_with,
                            allow_http)
+from registration.forms import RegistrationForm
+
 from opencore.models import *
 
 def index_of_members(request):
@@ -25,6 +27,39 @@ def member_account(request, username):
 
     memberships = ProjectMember.objects.filter(user=user)
     return locals()
+
+
+@allow_http("GET", "POST")
+@rendered_with("opencore/member/account_first_time.html")
+def member_account_first_time(request, username):
+    user = User.objects.get(username=username)
+    #if user != request.user:
+    #    return HttpResponseForbidden()
+    if user.has_usable_password():
+        messages.info(request, "Sorry, you missed your chance.")
+        return redirect("member_account", user.username)
+
+    if request.method == "GET":
+        invites = ProjectInvite.objects.filter(user=user)
+        registration_form = RegistrationForm(
+            initial={'email': user.email})
+        return locals()
+    registration_form = RegistrationForm(data=request.POST)
+    if not registration_form.is_valid():
+        return locals()
+    user.username = registration_form.cleaned_data['username']
+    user.set_password(registration_form.cleaned_data['password1'])
+    user.save()
+    messages.success(request, "You're now a real user!")
+
+    from django.contrib.auth import authenticate
+    from django.contrib.auth import login
+    user_with_backend = authenticate(
+        username=user.username, 
+        password=registration_form.cleaned_data['password1'])
+    login(request, user_with_backend)
+
+    return redirect("member_account", user.username)
 
 @allow_http("POST")
 def member_project_invites(request, username, project_slug):

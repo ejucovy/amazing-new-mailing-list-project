@@ -56,4 +56,12 @@ Or search again:
   by username, name or email: <input name="invite_search"></input>
   <input type="submit" value="Search" />
 </form>
+
+<form method="POST" action="{% url project_team_invite_email project.slug %}">
+  {% csrf_token %}
+  Or invite a new user to create an account and join your project:
+  <input name="email" />
+  (optional) Send a message: <input name="custom_message" />
+  <input type="submit" value="Send" />
+</form>
 {% endblock %}

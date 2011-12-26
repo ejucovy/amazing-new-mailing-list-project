@@ -1,5 +1,7 @@
 from django.db import models
 
+from opencore.signals import contact_confirmed
+
 class EmailContact(models.Model):
     email = models.EmailField()
     confirmed = models.BooleanField(default=False)

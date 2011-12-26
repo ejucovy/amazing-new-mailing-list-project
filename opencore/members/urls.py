@@ -10,7 +10,11 @@ urlpatterns = patterns(
     url(r'^$', 'index_of_members', name='index_of_members'),
 
     url('^(?P<username>[\w\d-]+)/$', 'member_home', name='member_home'),
-    url('^(?P<username>[\w\d-]+)/account/$', 'member_account', name='member_account'),
+    url('^(?P<username>[\w\d-]+)/account/$', 'member_account', 
+        name='member_account'),
+
+    url('^(?P<username>[\w\d-]+)/account/welcome/$', 
+        'member_account_first_time', name='member_account_first_time'),
 
     url('^(?P<username>[\w\d-]+)/account/project-invites/(?P<project_slug>[\w\d-]+)/$', 'member_project_invites', name='member_project_invites'),
 

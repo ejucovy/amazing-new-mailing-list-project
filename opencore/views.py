@@ -10,6 +10,17 @@ from djangohelpers import (rendered_with,
 from opencore.models import *
 from opencore.forms import (ProjectForm, 
                             TeamForm)
+from main.models import EmailContact
+
+import random
+from django.conf import settings
+from django.template.loader import render_to_string
+from registration.models import RegistrationProfile
+
+def random_name():
+    return "".join(random.choice("abcdefghijklmnopqrxtuvwxyz"
+                                 "ABCDEFGHIJKLMNOPQRXTUVWXYZ"
+                                 "1234567890@.+-_") for i in range(30))
 
 @allow_http("GET", "POST")
 @rendered_with("opencore/index_of_projects.html")
@@ -83,7 +94,61 @@ def project_team_request_membership(request, project_slug):
     prequest.send(request.POST.get("message"))
     messages.success(request, "Good luck with your request!")
     return redirect(project)
-    
+
+@allow_http("POST")
+def project_team_invite_email(request, project_slug):
+    project = Project.objects.get(slug=project_slug)
+    if not project.viewable(request):
+        return HttpResponseForbidden()
+    if not project.manageable(request):
+        return HttpResponseForbidden()
+
+    email = request.POST['email']
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        pass
+    else:
+        messages.info(request, "This user already exists. Search better.")
+        return redirect(project)
+
+    user = RegistrationProfile.objects.create_inactive_user(
+        username=random_name(), password=random_name(), email=email, 
+        site=None, send_email=False)
+    user.is_active = False
+    user.set_unusable_password()
+    user.save()
+
+    contact = EmailContact.objects.create(
+        email=email, confirmed=False, user=user)
+    contact.save()
+
+    invite = ProjectInvite.objects.create(user=user, project=project,
+                                          inviter=request.user)
+
+    registration_profile = RegistrationProfile.objects.get(user=user)
+    ctx_dict = {'activation_key': registration_profile.activation_key,
+                'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
+                'site': {'domain': settings.SITE_DOMAIN,
+                         'name': settings.SITE_NAME},
+                }
+
+    ctx_dict['invite'] = invite
+    custom_message = request.POST.get('custom_message') or ''
+    if custom_message and custom_message.strip():
+        ctx_dict['custom_message'] = custom_message.strip()
+
+    subject = "You're been invited"
+    message = render_to_string(
+        'gateway/project_invite_pending_activation_email.txt', ctx_dict)
+    email = EmailMessageWithEnvelopeTo(subject, message, 
+                                       settings.DEFAULT_FROM_EMAIL,
+                                       [contact.email])
+    email.send()
+
+    messages.success(request, "Your invitation has been sent.")
+    return redirect(project)
+
 @allow_http("POST")
 def project_team_invite(request, project_slug):
     project = Project.objects.get(slug=project_slug)

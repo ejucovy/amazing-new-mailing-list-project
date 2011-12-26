@@ -1,10 +1,13 @@
 import random
+from celery.task import task
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 from registration.models import RegistrationProfile
 from zope.dottedname.resolve import resolve
+
+from main.email import EmailMessageWithEnvelopeTo
 from main.models import EmailContact, DeferredMessage
-from celery.task import task
 
 def random_name():
     return "".join(random.choice("abcdefghijklmnopqrxtuvwxyz"
@@ -28,7 +31,8 @@ def new_contact(msg):
     addr = msg.get("From")
 
     user = RegistrationProfile.objects.create_inactive_user(
-        username=random_name(), password=random_name(), email=addr, site=None, send_email=True)
+        username=random_name(), password=random_name(), email=addr, 
+        site=None, send_email=False)
     user.is_active = False
     user.set_unusable_password()
     user.save()
@@ -36,6 +40,20 @@ def new_contact(msg):
     contact = EmailContact.objects.create(
         email=addr, confirmed=False, user=user)
     contact.save()
+
+    registration_profile = RegistrationProfile.objects.get(user=user)
+    ctx_dict = {'activation_key': registration_profile.activation_key,
+                'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
+                'site': {'domain': settings.SITE_DOMAIN,
+                         'name': settings.SITE_NAME},
+                }
+    subject = "Please confirm your account"
+    message = render_to_string(
+        'gateway/listen_mail_pending_activation_email.txt', ctx_dict)
+    email = EmailMessageWithEnvelopeTo(subject, message, 
+                                       settings.DEFAULT_FROM_EMAIL,
+                                       [contact.email])
+    email.send()
 
     return defer(msg, contact)
 

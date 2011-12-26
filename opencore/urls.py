@@ -20,6 +20,9 @@ urlpatterns = patterns(
 
     url('^(?P<project_slug>[\w\d-]+)/manage-team/invite/$', 
         'project_team_invite', name='project_team_invite'),
+    url('^(?P<project_slug>[\w\d-]+)/manage-team/invite-by-email/$', 
+        'project_team_invite_email', name='project_team_invite_email'),
+
     url('^(?P<project_slug>[\w\d-]+)/request-membership/$', 
         'project_team_request_membership', 
         name='project_team_request_membership'),
