@@ -11,3 +11,7 @@ MIDDLEWARE_CLASSES = (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'opencore_client.middleware.ContainerMiddleware',
 )
+
+TEMPLATE_DIRS = (
+    
+    )
