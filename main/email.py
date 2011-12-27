@@ -1,4 +1,6 @@
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, SafeMIMEText
+from django.core.mail.message import formatdate, make_msgid, smart_str
+from django.conf import settings
 
 class EmailMessageWithEnvelopeTo(EmailMessage):
     def message(self):
