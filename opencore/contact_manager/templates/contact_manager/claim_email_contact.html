@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Your Account</h1>
+
+To claim your account, please choose a username and password:
+<form method="POsT">
+  {% csrf_token %}
+  <input type="hidden" name="register" value="true" />
+  {{ registration_form.as_p }}
+  <input type="submit" value="Register" />
+</form>
+
+<hr/>
+
+Already have an account under a different email address?  No problem -- just log in here:
+<form method="POST">
+  {% csrf_token %}
+
+  {{ login_form.as_p }}
+  <input type="submit" value="Claim Email Address" />
+</form>
+{% endblock %}
