@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 from opencore import listeners
-from main.email import EmailMessageWithEnvelopeTo
+from main.mail import EmailMessageWithEnvelopeTo
 
 PROJECT_ROLES = (
     ("ProjectAdmin", "Project Admin"),

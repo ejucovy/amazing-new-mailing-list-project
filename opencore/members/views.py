@@ -11,7 +11,7 @@ from djangohelpers import (rendered_with,
 from opencore.models import *
 from main.models import EmailContact
 from opencore.contact_manager.forms import EmailContactForm
-from main.email import EmailMessageWithEnvelopeTo
+from main.mail import EmailMessageWithEnvelopeTo
 
 @allow_http("GET")
 @rendered_with("opencore/member/index_of_members.html")

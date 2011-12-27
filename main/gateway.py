@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from zope.dottedname.resolve import resolve
 
-from main.email import EmailMessageWithEnvelopeTo
+from main.mail import EmailMessageWithEnvelopeTo
 from main.models import EmailContact, DeferredMessage
 from opencore.registration_workflow.forms import TemporaryAccountFactory
 

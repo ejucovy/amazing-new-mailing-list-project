@@ -1,18 +1,20 @@
-from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import (HttpResponse,
                          HttpResponseForbidden, 
                          HttpResponseNotFound)
 from django.shortcuts import redirect 
+from django.views.decorators.csrf import csrf_exempt
+
 from djangohelpers import (rendered_with,
                            allow_http)
-from opencore.models import *
+
+from main.mail import EmailMessageWithEnvelopeTo
+from main.models import EmailContact
 from opencore.forms import (ProjectForm, 
                             TeamForm)
-from main.models import EmailContact
-
-from django.conf import settings
+from opencore.models import *
 from opencore.registration_workflow.forms import TemporaryAccountFactory
 
 @allow_http("GET")
