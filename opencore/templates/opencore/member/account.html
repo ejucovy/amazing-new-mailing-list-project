@@ -38,4 +38,29 @@ Invitation to join {{ invite.project.slug }}
 
 <hr/>
 {% endfor %}
+
+<h2>Manage Your Contact Methods</h2>
+<ol>
+  {% for contact in contacts %}
+  <li>
+    {{ contact }} 
+    {% if contact.email == user.email %}
+    <b>Primary</b>
+    {% else %}
+    {% if contact.confirmed %}
+    <form method="POST" action="{% url member_email_contacts_entry user.username contact.pk %}">
+      {% csrf_token %}
+      <input type="submit" value="Make primary" />
+    </form>
+    {% endif %}
+    {% endif %}
+  </li>
+  {% endfor %}
+</ol>
+<form method="POST" action="{% url member_email_contacts user.username %}">
+  {% csrf_token %}
+  Add an email address:
+  {{ contact_add_form.as_p }}
+  <input type="submit" />
+</form>
 {% endblock %}

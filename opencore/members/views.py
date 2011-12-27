@@ -9,6 +9,8 @@ from djangohelpers import (rendered_with,
                            allow_http)
 
 from opencore.models import *
+from main.models import EmailContact
+from opencore.forms import EmailContactForm
 
 def index_of_members(request):
     pass
@@ -25,7 +27,41 @@ def member_account(request, username):
     invites = ProjectInvite.objects.filter(user=user)
 
     memberships = ProjectMember.objects.filter(user=user)
+    contacts = EmailContact.objects.filter(user=user)
+
+    contact_add_form = EmailContactForm()
+
     return locals()
+
+@allow_http("POST")
+@rendered_with("opencore/member/account.html")
+def member_email_contacts(request, username):
+    user = User.objects.get(username=username)
+    if user != request.user:
+        return HttpResponseForbidden()
+
+    contact_add_form = EmailContactForm(data=request.POST)
+    if not contact_add_form.is_valid():
+        return locals()
+    
+    form.save(user)
+    messages.info(request, "Now check your email to confirm the contact.")
+    return redirect("member_account", user.username)
+
+@allow_http("POST")
+@rendered_with("opencore/member/account.html")
+def member_email_contacts_entry(request, username, contact_id):
+    user = User.objects.get(username=username)
+    if user != request.user:
+        return HttpResponseForbidden()
+    contact = EmailContact.objects.get(user=user, id=contact_id, 
+                                       confirmed=True)
+    user.email = contact.email
+    user.save()
+
+    messages.success(request,
+                     "Your primary email contact is now %s" % user.email)
+    return redirect("member_account", user.username)
 
 @allow_http("POST")
 def member_project_invites(request, username, project_slug):
