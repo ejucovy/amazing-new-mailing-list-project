@@ -10,7 +10,8 @@ from djangohelpers import (rendered_with,
 
 from opencore.models import *
 from main.models import EmailContact
-from opencore.forms import EmailContactForm
+from opencore.contact_manager.forms import EmailContactForm
+from main.email import EmailMessageWithEnvelopeTo
 
 def index_of_members(request):
     pass
@@ -44,7 +45,16 @@ def member_email_contacts(request, username):
     if not contact_add_form.is_valid():
         return locals()
     
-    form.save(user)
+    new_contact = contact_add_form.save(user)
+    registration_profile = contact_add_form.profile
+    subject = "Please confirm your email address"
+    body = registration_profile.render_to_string(
+        "contact_manager/confirm_secondary_email_contact.txt")
+    email = EmailMessageWithEnvelopeTo(subject, body, 
+                                       settings.DEFAULT_FROM_EMAIL,
+                                       [new_contact.email])
+    email.send()
+
     messages.info(request, "Now check your email to confirm the contact.")
     return redirect("member_account", user.username)
 

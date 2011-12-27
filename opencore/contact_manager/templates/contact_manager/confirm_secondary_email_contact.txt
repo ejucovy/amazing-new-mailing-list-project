@@ -1,0 +1,17 @@
+Hello,
+
+Somebody -- user {{ profile.contact.user.username }} on {{ site.name }} -- has
+added this email address, {{ profile.email }}, as an account contact method.
+
+If this message is in error, you can safely ignore it: your email address 
+will be removed from our system within {{ expiration_days }} days.
+
+Otherwise, to confirm your account, click here:
+
+http://{{ site.domain }}{% url confirm_secondary_email_contact activation_key %}
+
+Once your email address is confirmed, you can use it to send and receive
+messages on {{ site.name }}.
+
+Thanks,
+The Webmaster

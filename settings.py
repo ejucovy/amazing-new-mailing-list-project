@@ -118,6 +118,7 @@ INSTALLED_APPS = (
     'djkombu',
     'opencore',
     'opencore.members',
+    'opencore.contact_manager',
     'listen',
     'main',
     )

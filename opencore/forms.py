@@ -3,17 +3,6 @@ from django import forms
 from opencore.models import Project, ProjectMember
 from main.models import EmailContact
 
-class EmailContactForm(forms.ModelForm):
-    class Meta:
-        model = EmailContact
-        exclude = ("user", "confirmed")
-
-    def save(self, user):
-        contact = forms.ModelForm.save(self, commit=False)
-        contact.user = user
-        contact.save()
-        return contact
-
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
