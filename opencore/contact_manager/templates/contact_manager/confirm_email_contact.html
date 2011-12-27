@@ -25,7 +25,12 @@ with an existing username and password here:
 
 Another possibility is creating a new account to associate with this contact!  You'd do 
 that over here:
-
+<form method="POST">
+  {% csrf_token %}
+  <input type="hidden" name="register" value="true" />
+  {{ registration_form.as_p }}
+  <input type="submit" value="Register" />
+</form>
 <hr />
 
 Or, if this was all a terrible mistake, you can tell us to delete your contact from the
