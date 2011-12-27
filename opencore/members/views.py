@@ -13,11 +13,14 @@ from main.models import EmailContact
 from opencore.contact_manager.forms import EmailContactForm
 from main.email import EmailMessageWithEnvelopeTo
 
+@allow_http("GET")
+@rendered_with("opencore/member/index_of_members.html")
 def index_of_members(request):
-    pass
+    users = User.objects.filter(is_active=True)
+    return locals()
 
 def member_home(request, username):
-    pass
+    return redirect("member_profile", username)
 
 @allow_http("GET")
 @rendered_with("opencore/member/account.html")
@@ -105,8 +108,11 @@ def member_project_invites(request, username, project_slug):
     messages.success(request, "Poof!  You're a member.")
     return redirect("member_account", user.username)
 
+@allow_http("GET")
+@rendered_with("opencore/member/profile.html")
 def member_profile(request, username):
-    pass
+    user = User.objects.get(username=username, is_active=True)
+    return locals()
 
 def member_profile_edit(request, username):
     pass

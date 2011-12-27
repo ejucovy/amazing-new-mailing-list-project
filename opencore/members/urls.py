@@ -20,7 +20,7 @@ urlpatterns = patterns(
     url('^(?P<username>[\w\d-]+)/account/email-contacts/(?P<contact_id>\d+)/$',
         'member_email_contacts_entry', name='member_email_contacts_entry'),
 
-    url('^(?P<username>[\w\d-]+)/profile/$', 'member_profile', name='member_profile'),
-    url('^(?P<username>[\w\d-]+)/profile-edit/$', 'member_profile_edit', name='member_profile_edit'),
+    url('^(?P<username>[\w.@+-]+)/profile/$', 'member_profile', name='member_profile'),
+    url('^(?P<username>[\w.@+-]+)/profile-edit/$', 'member_profile_edit', name='member_profile_edit'),
 
     )
