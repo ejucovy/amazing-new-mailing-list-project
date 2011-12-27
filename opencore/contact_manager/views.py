@@ -48,8 +48,7 @@ def confirm_initial_email_contact(request, activation_key):
         return redirect("home")
 
     if not user.has_usable_password():
-        messages.error(request, "We need to redirect you to a page where you can choose a username and password.") ## XXX TODO
-        return redirect("home")
+        return redirect("confirm_temporary_account_email_contact", activation_key)
 
     if user.is_active:
         return redirect("confirm_secondary_email_contact", activation_key)
@@ -85,8 +84,7 @@ def confirm_secondary_email_contact(request, activation_key):
         return redirect("home")
 
     if not user.has_usable_password():
-        messages.error(request, "We need to redirect you to a page where you can choose a username and password.") ## XXX TODO
-        return redirect("home")
+        return redirect("confirm_temporary_account_email_contact", activation_key)
 
     if not user.is_active:
         return redirect("confirm_initial_email_contact", activation_key)
@@ -154,14 +152,14 @@ def confirm_temporary_account_email_contact(request, activation_key):
             return locals()
         user.username = registration_form.cleaned_data['username']
         user.set_password(registration_form.cleaned_data['password1'])
+        profile.confirm_contact()
+        user.is_active = True
+        user.save()
 
         user = authenticate(username=user.username, 
                             password=registration_form.cleaned_data['password1'])
         login(request, user)
 
-        profile.confirm_contact()
-        user.is_active = True
-        user.save()
 
         ## TODO: process Deferred Messages
 

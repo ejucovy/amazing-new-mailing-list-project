@@ -51,3 +51,29 @@ class RegistrationForm(forms.Form):
         self.profile = self.email_form.profile
 
         return new_user
+
+
+import random
+def random_name():
+    return "".join(random.choice("abcdefghijklmnopqrxtuvwxyz"
+                                 "ABCDEFGHIJKLMNOPQRXTUVWXYZ"
+                                 "1234567890@.+-_") for i in range(30))
+
+class TemporaryAccountFactory(object):
+    def __init__(self, email):
+        self.email = email
+
+    def registration_form(self):
+        registration_form = {'username': random_name(),
+                             'email': self.email,
+                             'password1': random_name()}
+        registration_form['password2'] = registration_form['password1']
+        registration_form = RegistrationForm(data=registration_form)
+        assert registration_form.is_valid()
+        return registration_form
+
+    def create_temporary_user(self, registration_form):
+        new_user = registration_form.save()
+        new_user.set_unusable_password()
+        new_user.save()
+        return new_user

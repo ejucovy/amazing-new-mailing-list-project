@@ -1,18 +1,11 @@
-import random
 from celery.task import task
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.template.loader import render_to_string
-from registration.models import RegistrationProfile
 from zope.dottedname.resolve import resolve
 
 from main.email import EmailMessageWithEnvelopeTo
 from main.models import EmailContact, DeferredMessage
-
-def random_name():
-    return "".join(random.choice("abcdefghijklmnopqrxtuvwxyz"
-                                 "ABCDEFGHIJKLMNOPQRXTUVWXYZ"
-                                 "1234567890@.+-_") for i in range(30))
+from opencore.registration_workflow.forms import TemporaryAccountFactory
 
 def process(msg):
     addr = msg.get("From")
@@ -28,28 +21,18 @@ def process(msg):
     return convert_to_web(msg, contact)
 
 def new_contact(msg):
-    addr = msg.get("From")
+    email = msg.get("From")
 
-    user = RegistrationProfile.objects.create_inactive_user(
-        username=random_name(), password=random_name(), email=addr, 
-        site=None, send_email=False)
-    user.is_active = False
-    user.set_unusable_password()
-    user.save()
+    factory = TemporaryAccountFactory(email)
+    registration_form = factory.registration_form()
+    new_user = factory.create_temporary_user(registration_form)
 
-    contact = EmailContact.objects.create(
-        email=addr, confirmed=False, user=user)
-    contact.save()
+    registration_profile = registration_form.profile
+    contact = registration_form.contact
 
-    registration_profile = RegistrationProfile.objects.get(user=user)
-    ctx_dict = {'activation_key': registration_profile.activation_key,
-                'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
-                'site': {'domain': settings.SITE_DOMAIN,
-                         'name': settings.SITE_NAME},
-                }
     subject = "Please confirm your account"
-    message = render_to_string(
-        'gateway/listen_mail_pending_activation_email.txt', ctx_dict)
+    message = registration_profile.render_to_string(
+        'gateway/listen_mail_pending_activation_email.txt')
     email = EmailMessageWithEnvelopeTo(subject, message, 
                                        settings.DEFAULT_FROM_EMAIL,
                                        [contact.email])

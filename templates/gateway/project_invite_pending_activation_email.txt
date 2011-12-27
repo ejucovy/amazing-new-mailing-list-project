@@ -15,7 +15,7 @@ email and your address will be removed from our records.
 To join {{ invite.project }} and create an account on {{ site.name }},
 please click the following link within the next {{ expiration_days }} days:
 
-http://{{site.domain}}/accounts/activate/{{ activation_key }}
+http://{{site.domain}}{% url confirm_temporary_account_email_contact activation_key %}
 
 You will then be able to choose a username and password to log in
 to the {{ site.name }} website and participate in {{ invite.project }}.
