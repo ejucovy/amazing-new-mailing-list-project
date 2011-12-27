@@ -96,7 +96,8 @@
           </form>
 	  {% else %}
 	  <div style="padding-top: 0.75em; font-weight: bold; color: white" class="pull-right">
-	    Welcome, {{ request.user }}!
+	    Welcome,
+	    <a href="{% url member_account request.user.username %}">{{ request.user }}</a>!
 	  </div>
 	  {% endif %}
         </div>

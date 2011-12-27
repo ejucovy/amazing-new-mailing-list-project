@@ -15,22 +15,7 @@ SHA1_RE = re.compile('^[a-f0-9]{40}$')
 from main.models import EmailContact
 
 class RegistrationManager(models.Manager):
-    def confirm_contact(self, activation_key):
-        if not SHA1_RE.search(activation_key):
-            return False
-        try:
-            profile = self.get(activation_key=activation_key)
-        except self.model.DoesNotExist:
-            return False
-        if profile.activation_key_expired():
-            return False
-        contact = profile.contact
-        contact.confirmed = True
-        contact.save()
-        profile.activation_key = self.model.ACTIVATED
-        profile.save()
-        return contact
-    
+
     def create_profile(self, contact):
         salt = sha_constructor(str(random.random())).hexdigest()[:5]
         username = contact.user.username
@@ -75,6 +60,14 @@ class RegistrationProfile(models.Model):
         # return True
     activation_key_expired.boolean = True
 
+    def confirm_contact(self):
+        contact = self.contact
+        contact.confirmed = True
+        contact.save()
+        self.activation_key = self.ACTIVATED
+        self.save()
+        return contact
+    
     def render_to_string(self, template_name, extra_context={}):
         context = {
             'activation_key': self.activation_key,

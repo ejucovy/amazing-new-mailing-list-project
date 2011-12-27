@@ -1,5 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-Sorry, this link is invalid or has expired.
+<h1>Your Account</h1>
+
+To confirm the addition of this contact ({{ contact.email }}) to your existing account 
+({{ contact.user }}) please confirm your identity by retyping your password:
+<form method="POST">
+  {% csrf_token %}
+  <input type="hidden" name="username" value="{{ contact.user.username }}" />
+  <input type="password" name="password" />
+  <input type="submit" value="Confirm Contact" />
+</form>
+<hr />
+
+Or, you can also associate this contact with a different account, by logging in
+with an existing username and password here:
+<form method="POST">
+  {% csrf_token %}
+  Username: <input name="username" />
+  Password: <input type="password" name="password" />
+  <input type="submit" value="Switch Account" />
+</form>
+<hr />
+
+Another possibility is creating a new account to associate with this contact!  You'd do 
+that over here:
+
+<hr />
+
+Or, if this was all a terrible mistake, you can tell us to delete your contact from the
+system.  We won't bother you again.
+<form method="POST">
+  {% csrf_token %}
+  <input type="hidden" name="delete" value="true" />
+  <input type="submit" value="Delete Contact" />
+</form>
 {% endblock %}
