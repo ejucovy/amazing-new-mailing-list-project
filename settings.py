@@ -173,6 +173,11 @@ LIST_POST_MODERATION_POLICIES = [
     ('closed', 'listen.policies.post.ClosedPolicy'),
     ]
 
+
+OPENCORE_SECRET_FILENAME = os.path.join(PROJECT_PATH, "secret.txt")
+OPENCORE_ADMIN_FILE = os.path.join(PROJECT_PATH, "admin.txt")
+OPENCORE_SERVER = "http://localhost:8000"
+
 # import local settings overriding the defaults
 try:
     from local_settings import *
@@ -192,3 +197,4 @@ else:
         MIDDLEWARE_CLASSES += LOCAL_MIDDLEWARE_CLASSES
     except NameError:
         pass
+

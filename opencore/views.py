@@ -234,8 +234,8 @@ def project_team_manage(request, project_slug):
     messages.success(request, "Modified %s memberships" % len(memberships))
     return redirect(project)
 
-
-@allow_http("GET")
+@csrf_exempt
+@allow_http("GET", "POST")
 @rendered_with("opencore/project_info.xml")
 def project_info(request, project_slug):
     project = Project.objects.get(slug=project_slug)
@@ -243,7 +243,8 @@ def project_info(request, project_slug):
         return HttpResponseForbidden()
     return locals()
 
-@allow_http("GET")
+@csrf_exempt
+@allow_http("GET", "POST")
 @rendered_with("opencore/project_info_members.xml")
 def project_info_members(request, project_slug):
     project = Project.objects.get(slug=project_slug)

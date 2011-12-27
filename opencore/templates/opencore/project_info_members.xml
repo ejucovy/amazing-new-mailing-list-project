@@ -1,6 +1,8 @@
 <members>
   {% for member in project.members %}
-  <id>{{ member.user.username }}</id>
-  <role>{{ member.role }}</role>
+  <member>
+    <id>{{ member.user.username }}</id>
+    <role>{{ member.role }}</role>
+  </member>
   {% endfor %}
 </members>

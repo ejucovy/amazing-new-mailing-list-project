@@ -9,6 +9,7 @@ MIDDLEWARE_CLASSES = (
     'opencore.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'opencore_client.middleware.SecurityContextMiddleware',
     'opencore_client.middleware.ContainerMiddleware',
 )
 
