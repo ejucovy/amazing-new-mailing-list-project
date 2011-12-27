@@ -30,10 +30,11 @@ def theme(request):
 @allow_http("GET", "POST")
 @rendered_with("opencore/index_of_projects.html")
 def index_of_projects(request):
-    projects = Project.objects.exclude(policy="closed")
+    projects = Project.objects.exclude(policy="policy_closed")
     if request.user.is_authenticated():
         projects = projects | \
             Project.objects.filter(projectmember=request.user)
+    projects = projects.distinct()
     return locals()
 
 @allow_http("GET", "POST")
