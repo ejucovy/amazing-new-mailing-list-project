@@ -75,6 +75,14 @@
     <div class="topbar">
       <div class="fill">
         <div class="container">
+	  {% if topnav.root %}
+          <a class="brand" 
+	     style="font-size: 1em; padding-top: 0.85em; margin-left: -10em;" 
+	     href="{{ topnav.root.href }}">
+	    {{ topnav.root.name }}
+	    &raquo;
+	  </a>
+	  {% endif %}
           <a class="brand" href="{{ topnav.container.href }}">
 	    {{ topnav.container.name }}
 	  </a>
@@ -98,6 +106,8 @@
 	  <div style="padding-top: 0.75em; font-weight: bold; color: white" class="pull-right">
 	    Welcome,
 	    <a href="{% url member_account request.user.username %}">{{ request.user }}</a>!
+	    |
+	    <a href="{% url auth_logout %}">Log out</a>
 	  </div>
 	  {% endif %}
         </div>

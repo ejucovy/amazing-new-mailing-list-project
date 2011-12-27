@@ -59,8 +59,13 @@ class Topnav(object):
         self.items = items
         self.container = None
 
-    def set_context(self, name, href):
-        self.container = {'name': name, 'href': href}
+    def set_context(self, name=None, href=None):
+        if not name and not href:
+            self.container = {'name': settings.SITE_NAME, 'href': "/"}
+            self.root = None
+        else:
+            self.container = {'name': name, 'href': href}
+            self.root = {'name': settings.SITE_NAME, 'href': "/"}
 
 class ContainerMiddleware(object):
 
@@ -88,8 +93,7 @@ class ContainerMiddleware(object):
                 ("/projects/", "Projects"),
                 ("/projects/create/", "Start a Project"),
                 ])
-        response.context_data['topnav'].set_context(
-            settings.SITE_NAME, "/")
+        response.context_data['topnav'].set_context()
         return response        
     
     def process_template_response(self, request, response):
