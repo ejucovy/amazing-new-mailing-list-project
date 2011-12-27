@@ -27,7 +27,6 @@ class PresetEmailRegistrationForm(RegistrationForm):
 
     def clean_email(self):
         return self.preset_email
-        
 
 @allow_http("GET", "POST")
 @rendered_with("contact_manager/confirm_email_contact.html")
