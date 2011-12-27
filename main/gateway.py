@@ -1,3 +1,6 @@
+from email.utils import parseaddr
+from email.header import decode_header
+
 from celery.task import task
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -9,7 +12,8 @@ from opencore.registration_workflow.forms import TemporaryAccountFactory
 
 def process(msg):
     addr = msg.get("From")
-    
+    addr = parseaddr(addr)[1]
+
     try:
         contact = EmailContact.objects.get(email=addr)
     except EmailContact.DoesNotExist:
@@ -22,6 +26,7 @@ def process(msg):
 
 def new_contact(msg):
     email = msg.get("From")
+    addr = parseaddr(addr)[1]
 
     factory = TemporaryAccountFactory(email)
     registration_form = factory.registration_form()

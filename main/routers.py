@@ -1,3 +1,6 @@
+from email.utils import parseaddr
+from email.header import decode_header
+
 from django.conf import settings
 import libopencore.auth
 from httplib2 import Http
@@ -36,10 +39,14 @@ def email_to_http(msg, contact):
     headers['Cookie'] = "__ac=%s" % val
 
     subject = msg['subject']
+    subject = decode_header(subject)
+
     body = get_payload(msg)
 
     ### XXX TODO: componentization of this list-locating logic?
-    list = msg['to'].split("@")[0]
+    addr = msg['To']
+    addr = parseaddr(addr)[1]
+    list = addr.split("@")[0]
     command = None
     if '+' in list:
         list, command = list.split("+")
