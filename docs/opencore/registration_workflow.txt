@@ -1,0 +1,81 @@
+There are three paths to creating an account on an OpenCore site:
+
+1) The new user registers an account through the website
+2) An existing project administrator sends a "Join Project" invitation to an unrecognized contact
+3) Someone sends an email to the website from an unrecognized contact
+
+In all cases, the Confirmation Workflow requires that the user confirm that he owns the claimed
+email address in order to activate his new account.  He does this by clicking on an unguessable
+link in an email that is sent directly to the claimed email address.  But the details of this 
+workflow will vary based on the entry path.
+
+There is also a fourth path that will trigger a Confirmation Workflow:
+
+4) An existing active user with a confirmed email address adds a new email address to his account
+
+== (1) Self-Registration through the Website ==
+
+1) An anonymous user visits the ``registration_register`` view
+2) He is presented with a registration form which requires: username, email, password
+3) The email he provides must not already be associated with an existing account
+4) A new, inactive account is created
+5) A new, unconfirmed email contact is created and joined to the account
+6) An email is sent to the provided address containing an unguessable link
+7) The user clicks on the link
+8) The system confirms that the contact referenced by the link is unconfirmed; that the
+   associated account is inactive; and that the associated account has a password set
+9) The user's contact becomes confirmed; his account becomes active; and he is logged in
+   immediately
+0) Any DeferredMessages associated with the now-confirmed Contact are reprocessed
+
+== (2) Email Invitation from a Project Administrator ==
+
+1) An authenticated project admin visits the ``project_manage_team`` view
+2) He types in one or more email addresses to invite to his project, and an optional message
+3) If the email address is associated with an existing confirmed contact, a standard Project
+   Invite or Project Invite Reminder is issued to the accountholder
+4) If the email address is associated with an existing unconfirmed contact, SOMETHING MUST
+   HAPPEN WHICH IS NOT YET DREAMT OF IN MY PHILOSOPHY (i.e. a Confirmation Reminder Workflow)
+5) If the email address is not associated with any contact in the system, proceed!
+6) A new, inactive account is created with a random username and no usable password
+7) A Project Invite object is created for the new account
+8) An email is sent to the provided address containing an unguessable link and the message
+   from the project administrator
+9) The user clicks on the link
+0) The system confirms that the contact referenced by the link is unconfirmed; that the
+   associated account is inactive; and that the associated account does not have a password set
+1) The user is presented with a form where he can set a username and password for his new 
+   account, or log in to an existing account and add this email address to that account
+2) If the user sets a username and password for his new account, the user's username and password
+   are set; the contact becomes confirmed; his account becomes active; and he is logged in
+   immediately
+3) If instead the user logs in to an existing account, the contact becomes associates with the
+   existing user account instead; the contact becomes confirmed; his account becomes active if
+   it was not already active; any project invites associated with the temporary account are
+   transferred to the existing account; the temporary account is deleted; and the user is 
+   logged in to his existing account
+4) Any DeferredMessages associated with the now-confirmed Contact are reprocessed
+
+== (3) Self-Initiated Email to Site from Unrecognized Contact ==
+
+1) Somebody sends an email to the website, e.g. to post to a mailing list or request subscription
+2) The email address is not associated with any existing contact
+3) The message is stashed in a deferral queue
+4) A new, inactive account is created with a random username and no usable password
+5) An email is sent to the email address that initiated the message in the first place, 
+   containing an unguessable link and an explanation that his message will be deferred
+6) The user clicks on the link
+7) The system confirms that the contact referenced by the link is confirmed; that the 
+   associated account is inactive; and that the associated account does not have a password set
+8) The user is presented with a form where he can set a username and password for his new
+   account, or log in to an existing account and add this email address to that account
+9) If the user sets a username and password for his new account, the user's username and password
+   are set; the contact becomes confirmed; his account becomes active; and he is logged in
+   immediately
+0) If instead the user logs in to an existing account, the contact becomes associates with the
+   existing user account instead; the contact becomes confirmed; his account becomes active if
+   it was not already active; any project invites associated with the temporary account are
+   transferred to the existing account; the temporary account is deleted; and the user is 
+   logged in to his existing account
+1) Any DeferredMessages associated with the now-confirmed Contact are reprocessed
+

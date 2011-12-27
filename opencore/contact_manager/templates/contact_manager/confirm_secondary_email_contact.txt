@@ -1,7 +1,7 @@
 Hello,
 
 Somebody -- user {{ profile.contact.user.username }} on {{ site.name }} -- has
-added this email address, {{ profile.email }}, as an account contact method.
+added this email address, {{ profile.contact.email }}, as an account contact method.
 
 If this message is in error, you can safely ignore it: your email address 
 will be removed from our system within {{ expiration_days }} days.

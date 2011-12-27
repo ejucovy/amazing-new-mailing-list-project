@@ -1,0 +1,18 @@
+Hello,
+
+Somebody has registered an account "{{ profile.contact.user.username }}" on {{ site.name }}
+using this email address, {{ profile.contact.email }}.
+
+If this message is in error, you can safely ignore it: your email address 
+will be removed from our system within {{ expiration_days }} days, and the 
+offending account will be exterminated.
+
+Otherwise, to confirm your account, click here:
+
+http://{{ site.domain }}{% url confirm_initial_email_contact activation_key %}
+
+Once your email address is confirmed, you can log in to {{ site.name }} and have
+a great time.
+
+Thanks,
+The Webmaster

@@ -28,69 +28,88 @@ class PresetEmailRegistrationForm(RegistrationForm):
     def clean_email(self):
         return self.preset_email
 
+@allow_http("GET")
+def confirm_initial_email_contact(request, activation_key):
+    try:
+        profile = RegistrationProfile.objects.get(activation_key=activation_key)
+    except RegistrationProfile.DoesNotExist:
+        messages.error(request, "This link is invalid, sorry.")
+        return redirect("home")
+    if profile.activation_key_expired():
+        messages.error(request, "This link is expired, sorry.")
+        return redirect("home")
+
+    contact = profile.contact
+    user = contact.user
+
+    if contact.confirmed:
+        messages.error(request, "This contact is already confirmed.")
+        ## TODO: system is in a logically inconsistent state. fix the profile object
+        return redirect("home")
+
+    if not user.has_usable_password():
+        messages.error(request, "We need to redirect you to a page where you can choose a username and password.") ## XXX TODO
+        return redirect("home")
+
+    if user.is_active:
+        return redirect("confirm_secondary_email_contact", activation_key)
+
+    profile.confirm_contact()
+    user.is_active = True
+    user.save()
+
+    ## TODO: process Deferred Messages
+
+    messages.success(request, "Your account is now confirmed -- go forth and conquer!")
+    return redirect("member_account", user.username)
+    
+
 @allow_http("GET", "POST")
 @rendered_with("contact_manager/confirm_email_contact.html")
 def confirm_secondary_email_contact(request, activation_key):
     try:
         profile = RegistrationProfile.objects.get(activation_key=activation_key)
     except RegistrationProfile.DoesNotExist:
-        messages.error(request, "This link is invalid or expired, sorry.")
+        messages.error(request, "This link is invalid, sorry.")
         return redirect("home")
     if profile.activation_key_expired():
-        messages.error(request, "This link is invalid or expired, sorry.")
+        messages.error(request, "This link is expired, sorry.")
         return redirect("home")
 
     contact = profile.contact
-    registration_form = PresetEmailRegistrationForm(email=contact.email)
-    if request.method == "GET":
-        return locals()
+    user = contact.user
 
-    if request.POST.get("delete") == "true":
-        profile.delete()
-        contact.delete()
-        messages.info(request, "Okay, the contact has been deleted.")
+    if contact.confirmed:
+        messages.error(request, "This contact is already confirmed.")
+        ## TODO: system is in a logically inconsistent state. fix the profile object
         return redirect("home")
 
-    if request.POST.get("register") == "true":
-        registration_form = PresetEmailRegistrationForm(email=contact.email, data=request.POST)
-        if not registration_form.is_valid():
-            return locals()
-        new_user = User.objects.create_user(registration_form.cleaned_data['username'],
-                                            contact.email,
-                                            registration_form.cleaned_data['password1'])
-        contact.user = new_user
-        contact.save()
-        
-        new_user = authenticate(username=registration_form.cleaned_data['username'],
-                                password=registration_form.cleaned_data['password1'])
-        login(request, new_user)
+    if not user.has_usable_password():
+        messages.error(request, "We need to redirect you to a page where you can choose a username and password.") ## XXX TODO
+        return redirect("home")
 
-        profile.confirm_contact()
+    if not user.is_active:
+        return redirect("confirm_initial_email_contact", activation_key)
 
-        new_user.is_active = True
-        new_user.save()
-
-        messages.success(
-            request,
-            "Your contact has been confirmed and you have created a new account %s" % new_user)
-        return redirect("member_account", new_user.username)
-
+    if request.method == "GET":
+        return locals()
 
     login_form = AuthenticationForm(data=request.POST)
     if not login_form.is_valid():
         messages.info(request, "There was an error, please check your password and try again.")
         return redirect(".")
     claimant_user = login_form.get_user()
-    if claimant_user != contact.user:
-        contact.user = claimant_user
-        contact.save()
+
+    ## XXX TODO
+    assert claimant_user == contact.user
 
     login(request, claimant_user)
     profile.confirm_contact()
 
-    if not claimant_user.is_active:
-        claimant_user.is_active = True
-        claimant_user.save()
+    ## XXX TODO
+    assert claimant_user.is_active
+
+    ## TODO: process Deferred Messages
 
     messages.success(
         request,

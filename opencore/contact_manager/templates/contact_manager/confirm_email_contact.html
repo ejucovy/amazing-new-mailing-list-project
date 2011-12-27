@@ -11,33 +11,4 @@ To confirm the addition of this contact ({{ contact.email }}) to your existing a
   <input type="password" name="password" />
   <input type="submit" value="Confirm Contact" />
 </form>
-<hr />
-
-Or, you can also associate this contact with a different account, by logging in
-with an existing username and password here:
-<form method="POST">
-  {% csrf_token %}
-  Username: <input name="username" />
-  Password: <input type="password" name="password" />
-  <input type="submit" value="Switch Account" />
-</form>
-<hr />
-
-Another possibility is creating a new account to associate with this contact!  You'd do 
-that over here:
-<form method="POST">
-  {% csrf_token %}
-  <input type="hidden" name="register" value="true" />
-  {{ registration_form.as_p }}
-  <input type="submit" value="Register" />
-</form>
-<hr />
-
-Or, if this was all a terrible mistake, you can tell us to delete your contact from the
-system.  We won't bother you again.
-<form method="POST">
-  {% csrf_token %}
-  <input type="hidden" name="delete" value="true" />
-  <input type="submit" value="Delete Contact" />
-</form>
 {% endblock %}
