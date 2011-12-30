@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 
 from djangohelpers import rendered_with, allow_http
 
-from main.email import EmailMessageWithEnvelopeTo
+from main.mail import EmailMessageWithEnvelopeTo
 from main.models import EmailContact
 from opencore.models import ProjectInvite
 from opencore.registration_workflow.forms import RegistrationForm
