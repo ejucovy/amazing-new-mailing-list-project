@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ project }}</h1>
+<h2>Your Team</h2>
+<ul>
+  {% for mship in members %}
+  <li>
+    <a href="{% url member_profile mship.user.username %}">{{ mship.user }}</a>
+    ({{ mship.role }})
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

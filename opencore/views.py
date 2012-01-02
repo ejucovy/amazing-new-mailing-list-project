@@ -13,6 +13,7 @@ from djangohelpers import (rendered_with,
 from main.mail import EmailMessageWithEnvelopeTo
 from main.models import EmailContact
 from opencore.forms import (ProjectForm, 
+                            ProjectEditForm,
                             TeamForm)
 from opencore.models import *
 from opencore.registration_workflow.forms import TemporaryAccountFactory
@@ -56,6 +57,7 @@ def project_home(request, project_slug):
 def _edit_project(request):
     pass
 
+@rendered_with("opencore/edit_project.html")
 @allow_http("GET", "POST")
 def project_preferences(request, project_slug):
     project = Project.objects.get(slug=project_slug)
@@ -63,14 +65,24 @@ def project_preferences(request, project_slug):
         return HttpResponseForbidden()
     if not project.manageable(request):
         return HttpResponseForbidden()
-    pass
+    if request.method == "GET":
+        form = ProjectEditForm(instance=project)
+        return locals()
+    form = ProjectEditForm(instance=project, data=request.POST)
+    if not form.is_valid():
+        return locals()
+    form.save()
+    messages.success(request, "Your preferences have been saved.  Good job.")
+    return redirect(project)
 
+@rendered_with("opencore/project_team.html")
 @allow_http("GET")
 def project_team(request, project_slug):
     project = Project.objects.get(slug=project_slug)
     if not project.viewable(request):
         return HttpResponseForbidden()
-    pass
+    members = ProjectMember.objects.filter(project=project)
+    return locals()
 
 @allow_http("GET", "POST")
 def project_team_request_membership(request, project_slug):

@@ -13,6 +13,11 @@ class ProjectForm(forms.ModelForm):
         membership.save()
         return project
 
+class ProjectEditForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        exclude = ['slug']
+
 class TeamForm(forms.Form):
 
     memberships = forms.ModelMultipleChoiceField(
