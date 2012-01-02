@@ -54,8 +54,6 @@ def project_home(request, project_slug):
         return HttpResponseForbidden()
     return locals()
 
-def _edit_project(request):
-    pass
 
 @rendered_with("opencore/edit_project.html")
 @allow_http("GET", "POST")
